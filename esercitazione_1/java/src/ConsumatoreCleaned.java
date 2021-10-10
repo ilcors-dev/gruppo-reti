@@ -3,12 +3,12 @@ import java.io.FileReader;
 import java.io.IOException;
 
 // Consumatore e' un filtro
-public class Consumatore {
+public class ConsumatoreCleaned {
     public static void main(String[] args) {
         String filter = null;
         FileReader r = null;
-        int x;
         char ch;
+        int x;
 
         if (args.length > 2) {
             System.out.println("Utilizzo: consumatore <filterprefix> <inputFilename> oppure");
@@ -24,14 +24,11 @@ public class Consumatore {
                 r = new FileReader(args[1]);
             } else {
                 r = new FileReader(args[0]);
-                while ((char) (x = r.read()) != '\n')
-                    filter += (char) x;
+                filter = getFilter(r);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File non trovato");
             System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         try {
@@ -46,5 +43,20 @@ public class Consumatore {
             System.out.println("Errore di input");
             System.exit(2);
         }
+    }
+
+    public static String getFilter(FileReader r) {
+        String filter = "";
+        int x;
+
+        try {
+            while ((char) (x = r.read()) != '\n') {
+                filter += (char) x;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return filter;
     }
 }
