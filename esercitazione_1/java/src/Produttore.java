@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-// Produttore NON e' un filtro
 public class Produttore {
     public static void main(String[] args) {
         BufferedReader in = null;
@@ -15,17 +14,14 @@ public class Produttore {
             System.exit(0);
         }
 
-        System.out.println("Quante righe vuoi inserire?");
         in = new BufferedReader(new InputStreamReader(System.in));
 
         FileWriter fout;
         String inputl = null;
         try {
             fout = new FileWriter(args[0]);
-            res = Integer.parseInt(in.readLine());
-            for (int i = 0; i < res; i++) {
-                System.out.println("Inserisci la nuova riga");
-                inputl = in.readLine() + "\n";
+            while ((inputl = in.readLine()) != null) {
+                inputl += System.lineSeparator();
                 fout.write(inputl, 0, inputl.length());
             }
             fout.close();
