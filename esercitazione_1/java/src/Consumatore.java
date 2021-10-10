@@ -1,3 +1,4 @@
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,26 +13,23 @@ public class Consumatore {
 
         if (args.length > 2) {
             System.out.println("Utilizzo: consumatore <filterprefix> <inputFilename> oppure");
-            System.out.println("Utilizzo: consumatore <inputFilename>");
+            System.out.println("Utilizzo: consumatore <filterprefix> '<' <inputFilename>");
             System.exit(0);
         }
+
+        filter = args[0];
 
         try {
             // se args.length == 2 allora il filtro è passato come parametro
             // altrimenti è da leggere da un file
             if (args.length == 2) {
-                filter = args[0];
                 r = new FileReader(args[1]);
             } else {
-                r = new FileReader(args[0]);
-                while ((char) (x = r.read()) != '\n')
-                    filter += (char) x;
+                r = new FileReader(FileDescriptor.in);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File non trovato");
             System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         try {
