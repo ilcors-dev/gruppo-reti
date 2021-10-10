@@ -4,10 +4,7 @@
 
 ### Bernardini Claudio, Corsetti Luca, Giardina Gianluca, Straccali Leonardo
 
-###### Anno accademico 2021/2022
-
-<br/>
-<br/>
+#### Anno accademico 2021/2022
 
 ## Scopo dell'esercitazione
 
