@@ -17,13 +17,6 @@ int main(int argc, char* argv[]){
 	} 
 	
 	file_out = argv[1];	
-	printf("Quante righe vuoi inserire?\n");
-    readValues = scanf("%d", &righe); 
-	if( readValues != 1 ) {
-		printf("Errore: immettere un intero!");
-		exit(1);
-	}
-    gets (buf); // consumare il fine linea
 	
 	fd = open(file_out, O_WRONLY|O_CREAT|O_TRUNC, 00640);
 	if (fd < 0){
@@ -31,9 +24,8 @@ int main(int argc, char* argv[]){
 		exit(2);
 	}
 	
-	for(i=0;i<righe;++i){
-        printf("Inserisci la nuova riga\n");
-		gets (riga); 
+	printf("Inserisci le righe del file: [EOF per terminare l'inserimento] \n");
+	while (gets(riga) != NULL) { 
 		/* la gets legge tutta la riga, separatori inclusi, e trasforma il fine 
 	       linea in fine stringa */
 		// aggiungo il fine linea
