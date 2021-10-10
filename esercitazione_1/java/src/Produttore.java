@@ -16,7 +16,7 @@ public class Produttore {
 
         in = new BufferedReader(new InputStreamReader(System.in));
 
-        FileWriter fout;
+        FileWriter fout = null;
         String inputl = null;
         try {
             fout = new FileWriter(args[0]);
