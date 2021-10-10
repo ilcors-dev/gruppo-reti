@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6474dbe8-e7bf-415c-9201-492bfd1d367b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/gruppo-reti.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gruppo-reti.iml" afterDir="false" />
+    <list default="true" id="6474dbe8-e7bf-415c-9201-492bfd1d367b" name="Changes" comment="refactor cartelle in 'c' &amp; 'java'">
+      <change afterPath="$PROJECT_DIR$/esercitazione_1/java/src/Consumatore.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/esercitazione_1/java/src/Produttore.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/.idea/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/.idea/runConfigurations.xml" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/.idea/runConfigurations.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/esercitazione_1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/esercitazione_1.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/esercitazione_1/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/esercitazione_1/java/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/esercitazione_1/java/src/Main.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -31,8 +33,22 @@
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\lucac\Documents\java\gruppo-reti\esercitazione_1\java\src" />
+      <recent name="D:\lucac\Documents\java\gruppo-reti\esercitazione_1\java" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Consumatore">
+    <configuration name="Consumatore" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Consumatore" />
+      <module name="gruppo-reti" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="gruppo-reti" />
@@ -42,6 +58,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Consumatore" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -55,6 +72,14 @@
       <option name="presentableId" value="Default" />
       <updated>1633872242010</updated>
     </task>
+    <task id="LOCAL-00001" summary="refactor cartelle in 'c' &amp; 'java'">
+      <created>1633873532038</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1633873532038</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -67,5 +92,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="refactor cartelle in 'c' &amp; 'java'" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor cartelle in 'c' &amp; 'java'" />
   </component>
 </project>
