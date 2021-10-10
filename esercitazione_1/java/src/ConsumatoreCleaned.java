@@ -6,9 +6,9 @@ import java.io.IOException;
 public class ConsumatoreCleaned {
     public static void main(String[] args) {
         String filter = null;
-        FileReader r = null;
+        FileReader reader = null;
         char ch;
-        int x;
+        int prefix;
 
         if (args.length > 2) {
             System.out.println("Utilizzo: consumatore <filterprefix> <inputFilename> oppure");
@@ -21,10 +21,10 @@ public class ConsumatoreCleaned {
             // altrimenti è da leggere da un file
             if (args.length == 2) {
                 filter = args[0];
-                r = new FileReader(args[1]);
+                reader = new FileReader(args[1]);
             } else {
-                r = new FileReader(args[0]);
-                filter = getFilter(r);
+                reader = new FileReader(args[0]);
+                filter = getFilter(reader);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File non trovato");
@@ -32,13 +32,13 @@ public class ConsumatoreCleaned {
         }
 
         try {
-            while ((x = r.read()) >= 0) {
-                ch = (char) x;
+            while ((prefix = reader.read()) >= 0) {
+                ch = (char) prefix;
                 // se il carattere non è tra quelli da filtrare, printa
                 if (filter.indexOf(ch) == -1)
                     System.out.print(ch);
             }
-            r.close();
+            reader.close();
         } catch (IOException ex) {
             System.out.println("Errore di input");
             System.exit(2);
