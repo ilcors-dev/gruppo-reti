@@ -10,8 +10,9 @@
 
 Lo scopo di questa esercitazione è sviluppare un'architettura che prevede la creazione di due entità, Produttore e Consumatore:
 
-- Il Produttore è un'entità che produce un file di testo contenente caratteri
-- Il Consumatore è un filtro che, preso in ingresso (con varie modalità) una sequenza di caratteri definita dall'utente, elimina questi caratteri da un file dato.
+- Il Produttore è un'entità che produce un file di testo contenente caratteri. La produzione del file viene fatta richiedendo all'utente le linee da scrivere sul file
+- Il Consumatore è un filtro che, preso in ingresso una sequenza di caratteri definita dall'utente, elimina questi caratteri da un file dato e stampa a video quelli restanti
+
 
 ## Il Produttore
 
@@ -20,7 +21,7 @@ La lettura dei parametri inseriti dall'utente continua fino a quando l'utente st
 
 ## Il Consumatore
 
-E' un processo che funge da **filtro a carattere** il cui scopo è eliminare da un file dato i caratteri contenuti in una sequenza, anch'essa data. La sequenza può essere fornita tramite _passaggio per argomento_ o _ottenuta dalla prima riga del file passato_.
+E' un processo che funge da **filtro a carattere** il cui scopo è eliminare da un file dato i caratteri contenuti in una sequenza, anch'essa data. La sequenza può essere fornita tramite _passaggio per argomento_ o _mediante redirezione in input_.
 La procedura di eliminazione è eseguita in modo sequenziale dall'inizio del file fino alla fine con il riconoscimento del carattere EOF.
 
 ## Codice Java
@@ -111,67 +112,119 @@ public class Consumatore {
 
 ### Produttore
 
-```c
+```C
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #define MAX_STRING_LENGTH 256
 
-// produttore.c NON e' un filtro
+/**
+ * Il produttore ha il compito di:
+ * Leggere le linee del fil scritte dal cliente
+ * Scrivere sul file passato come parametro
+ * 
+ * Sintassi invocazione: ./produttore input_file.txt
+*/
 int main(int argc, char* argv[]){
-	int fd, readValues, bytes_to_write, written, righe, i;
+	/**
+	 * Desrizione delle variabili:
+	 * fd: File descriptor del file passato come parametro
+	 * written: numero caratteri scritti sul file
+	 * file_out: puntatore a stringa nome del file da scrivere passato come parametro
+	 * riga: riga letta dall'utente
+	*/
+	int fd, written;
 	char *file_out;
-	char riga[MAX_STRING_LENGTH], buf[MAX_STRING_LENGTH];
-
-	//controllo numero argomenti
-	if (argc != 2){
+	char riga[MAX_STRING_LENGTH];
+	
+	/**
+	 * Controllo dei parametri di invocazione
+	 * Verifico la presenza del solo parametro: file da scrivere
+	 * 
+	 * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
+	*/
+	if (argc != 2){ 
 		perror(" numero di argomenti sbagliato"); exit(1);
-	}
-
-	file_out = argv[1];
-
+	} 
+	
+	file_out = argv[1];	//Stringa file input
+	
 	fd = open(file_out, O_WRONLY|O_CREAT|O_TRUNC, 00640);
 	if (fd < 0){
 		perror("P0: Impossibile creare/aprire il file");
 		exit(2);
 	}
-
+	
 	printf("Inserisci le righe del file: [EOF per terminare l'inserimento] \n");
-	while (gets(riga) != NULL) {
-		/* la gets legge tutta la riga, separatori inclusi, e trasforma il fine
+	while (gets(riga) != NULL) { 
+		/* la gets legge tutta la riga, separatori inclusi, e trasforma il fine 
 	       linea in fine stringa */
 		// aggiungo il fine linea
-		riga[strlen(riga)+1]='\0';
-		riga[strlen(riga)]='\n';
+		riga[strlen(riga)+1]='\0';  
+		riga[strlen(riga)]='\n';  
 		written = write(fd, riga, strlen(riga)); // uso della primitiva
 		if (written < 0){
 			perror("P0: errore nella scrittura sul file");
 			exit(3);
 		}
-	}
+	}	
 	close(fd);
 }
 ```
 
 ### Consumatore
 
-```c
-#define MAX_STRING_LENGTH 256
+```C
+#include <stdio.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <ctype.h>
 
-// consumatore.c e' un filtro
+/**
+ * Il consumatore è un filtro a caratteri:
+ * prende in input il file passato come parametro o il file passato come redirezione in input
+ * Scopo del programma è la stampa del contenuto del file privata dei caratteri passati come parametro
+ * 
+ * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
+*/ 
 int main(int argc, char *argv[])
 {
-
-    char *file_in, read_char, buf[MAX_STRING_LENGTH], *delete_chars;
+    /**
+     * Descrizione delle variabili:
+     * file_in: puntatore alla stringa nome del file da leggere
+     * read_char: carattere letto dal file
+     * delete_chars: puntatore alla stringa dei caratteri da rimuovere dalla stampa file
+     * nread: numero carattere letto dal file
+     * fd: file descriptor del file di input
+    */
+    char *file_in, read_char, *delete_chars;
     int nread, fd;
 
-    //controllo numero argomenti
+    /** 
+     * Controllo dei parametri in ingresso
+     * Il numero dei parametri possono essere compresi tra 2 e 3 (compresi)
+     * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
+    */
     if (argc < 2 || argc > 3)
     {
-        perror(" numero di argomenti sbagliato");
+        perror("numero di argomenti sbagliato");
         exit(1);
     }
 
     delete_chars = argv[1];
 
-    if (argc == 3)
+    //Conversione dei caratteri della stringa nel rispettivo carattere maiuscolo
+    for (int index = 0; delete_chars[index] != '\0'; ++index){
+		delete_chars[index] = toupper(delete_chars[index]);
+	}
+
+    printf("Stringa caratteri da rimuovere: %s\n", delete_chars);
+
+    if (argc == 3) //Caso 1: file passato come parametro
     {
         file_in = argv[2];
         fd = open(file_in, O_RDONLY);
@@ -181,15 +234,15 @@ int main(int argc, char *argv[])
             exit(2);
         }
     }
-    else
+    else //Caso 2: file passato mediante redirezione input
     {
-        fd = 0; //File descriptor stdin
+        fd = 0; //Associo file descriptor dello stdin
     }
     while ((nread = read(fd, &read_char, sizeof(char)))) /* Fino ad EOF*/
     {
         if (nread >= 0)
         {
-            if ((strchr(delete_chars, read_char)) == NULL)
+            if ((strchr(delete_chars, toupper(read_char))) == NULL) //Verifico che carattere letto non appartenga a stringa caratteri da rimuovere dall'output
                 putchar(read_char);
         }
         else
