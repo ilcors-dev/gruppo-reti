@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#define MAX_STRING_LENGTH 256
 
 /**
  * Il consumatore è un filtro a caratteri:
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
      * nread: numero carattere letto dal file
      * fd: file descriptor del file di input
     */
-    char *file_in, read_char, *delete_chars;
+    char *file_in, read_char, delete_chars[MAX_STRING_LENGTH];
     int nread, fd;
 
     /** 
@@ -36,7 +37,19 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    delete_chars = argv[1];
+    /*proposta di controllo by giangiu
+    int count=0;
+    for (int i = 0; i < strlen(argv[1]); i++)
+    {
+        if(strchr(delete_chars,toupper(argv[1][i]))==NULL && (argv[1][i]>'A' && argv[1][i]<'Z' || argv[1][i]>'a' && argv[1][i]<'z')){
+            delete_chars[count]=toupper(argv[1][i]);
+            count++;
+        }
+    }
+    delete_chars[count]='\0';
+    */
+
+    //delete_chars = argv[1];
 
     //Conversione dei caratteri della stringa nel rispettivo carattere maiuscolo
     for (int index = 0; delete_chars[index] != '\0'; ++index){
