@@ -31,5 +31,4 @@ public class Produttore {
             System.exit(2); // uscita con errore, intero positivo a livello di sistema Unix
         }
     }
-}
-
+} 
