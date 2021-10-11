@@ -5,18 +5,36 @@
 #include <unistd.h>
 #define MAX_STRING_LENGTH 256
 
-// produttore.c NON e' un filtro
+/**
+ * Il produttore ha il compito di:
+ * Leggere le linee del fil scritte dal cliente
+ * Scrivere sul file passato come parametro
+ * 
+ * Sintassi invocazione: ./produttore input_file.txt
+*/
 int main(int argc, char* argv[]){
-	int fd, readValues, bytes_to_write, written, righe, i;
+	/**
+	 * Desrizione delle variabili:
+	 * fd: File descriptor del file passato come parametro
+	 * written: numero caratteri scritti sul file
+	 * file_out: puntatore a stringa nome del file da scrivere passato come parametro
+	 * riga: riga letta dall'utente
+	*/
+	int fd, written;
 	char *file_out;
-	char riga[MAX_STRING_LENGTH], buf[MAX_STRING_LENGTH];
+	char riga[MAX_STRING_LENGTH];
 	
-	//controllo numero argomenti
+	/**
+	 * Controllo dei parametri di invocazione
+	 * Verifico la presenza del solo parametro: file da scrivere
+	 * 
+	 * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
+	*/
 	if (argc != 2){ 
 		perror(" numero di argomenti sbagliato"); exit(1);
 	} 
 	
-	file_out = argv[1];	
+	file_out = argv[1];	//Stringa file input
 	
 	fd = open(file_out, O_WRONLY|O_CREAT|O_TRUNC, 00640);
 	if (fd < 0){

@@ -8,11 +8,13 @@
  * Il consumatore è un filtro a caratteri:
  * prende in input il file passato come parametro o il file passato come redirezione in input
  * Scopo del programma è la stampa del contenuto del file privata dei caratteri passati come parametro
+ * 
+ * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
 */ 
 int main(int argc, char *argv[])
 {
     /**
-     * Descrizione dei vari parametri:
+     * Descrizione delle variabili:
      * file_in: puntatore alla stringa nome del file da leggere
      * read_char: carattere letto dal file
      * delete_chars: puntatore alla stringa dei caratteri da rimuovere dalla stampa file
