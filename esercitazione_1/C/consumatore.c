@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 /**
  * Il consumatore è un filtro a caratteri:
@@ -37,6 +38,13 @@ int main(int argc, char *argv[])
 
     delete_chars = argv[1];
 
+    //Conversione dei caratteri della stringa nel rispettivo carattere maiuscolo
+    for (int index = 0; delete_chars[index] != '\0'; ++index){
+		delete_chars[index] = toupper(delete_chars[index]);
+	}
+
+    printf("Stringa caratteri da rimuovere: %s\n", delete_chars);
+
     if (argc == 3) //Caso 1: file passato come parametro
     {
         file_in = argv[2];
@@ -55,7 +63,7 @@ int main(int argc, char *argv[])
     {
         if (nread >= 0)
         {
-            if ((strchr(delete_chars, read_char)) == NULL) //Verifico che carattere letto non appartenga a stringa caratteri da rimuovere dall'output
+            if ((strchr(delete_chars, toupper(read_char))) == NULL) //Verifico che carattere letto non appartenga a stringa caratteri da rimuovere dall'output
                 putchar(read_char);
         }
         else
