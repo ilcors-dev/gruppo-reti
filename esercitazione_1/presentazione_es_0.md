@@ -13,7 +13,6 @@ Lo scopo di questa esercitazione è sviluppare un'architettura che prevede la cr
 - Il Produttore è un'entità che produce un file di testo contenente caratteri. La produzione del file viene fatta richiedendo all'utente le linee da scrivere sul file
 - Il Consumatore è un filtro che, preso in ingresso una sequenza di caratteri definita dall'utente, elimina questi caratteri da un file dato e stampa a video quelli restanti
 
-
 ## Il Produttore
 
 E' un processo che richiede all'utente di inserire riga per riga stringhe che verranno salvate in un file. Il file in questione viene passato come parametro.
@@ -80,8 +79,8 @@ public class Consumatore {
         filter = args[0];
 
         try {
-            // se args.length == 2 allora il filtro è passato come parametro
-            // altrimenti è da leggere da un file
+            // se args.length == 2 allora il filtro è passato come parametro insieme al file
+            // altrimenti il file è passato mediante ridirezione input
             if (args.length == 2) {
                 r = new FileReader(args[1]);
             } else {
@@ -124,7 +123,7 @@ public class Consumatore {
  * Il produttore ha il compito di:
  * Leggere le linee del fil scritte dal cliente
  * Scrivere sul file passato come parametro
- * 
+ *
  * Sintassi invocazione: ./produttore input_file.txt
 */
 int main(int argc, char* argv[]){
@@ -138,38 +137,38 @@ int main(int argc, char* argv[]){
 	int fd, written;
 	char *file_out;
 	char riga[MAX_STRING_LENGTH];
-	
+
 	/**
 	 * Controllo dei parametri di invocazione
 	 * Verifico la presenza del solo parametro: file da scrivere
-	 * 
+	 *
 	 * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
 	*/
-	if (argc != 2){ 
+	if (argc != 2){
 		perror(" numero di argomenti sbagliato"); exit(1);
-	} 
-	
+	}
+
 	file_out = argv[1];	//Stringa file input
-	
+
 	fd = open(file_out, O_WRONLY|O_CREAT|O_TRUNC, 00640);
 	if (fd < 0){
 		perror("P0: Impossibile creare/aprire il file");
 		exit(2);
 	}
-	
+
 	printf("Inserisci le righe del file: [EOF per terminare l'inserimento] \n");
-	while (gets(riga) != NULL) { 
-		/* la gets legge tutta la riga, separatori inclusi, e trasforma il fine 
+	while (gets(riga) != NULL) {
+		/* la gets legge tutta la riga, separatori inclusi, e trasforma il fine
 	       linea in fine stringa */
 		// aggiungo il fine linea
-		riga[strlen(riga)+1]='\0';  
-		riga[strlen(riga)]='\n';  
+		riga[strlen(riga)+1]='\0';
+		riga[strlen(riga)]='\n';
 		written = write(fd, riga, strlen(riga)); // uso della primitiva
 		if (written < 0){
 			perror("P0: errore nella scrittura sul file");
 			exit(3);
 		}
-	}	
+	}
 	close(fd);
 }
 ```
@@ -188,9 +187,9 @@ int main(int argc, char* argv[]){
  * Il consumatore è un filtro a caratteri:
  * prende in input il file passato come parametro o il file passato come redirezione in input
  * Scopo del programma è la stampa del contenuto del file privata dei caratteri passati come parametro
- * 
+ *
  * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
-*/ 
+*/
 int main(int argc, char *argv[])
 {
     /**
@@ -204,7 +203,7 @@ int main(int argc, char *argv[])
     char *file_in, read_char, *delete_chars;
     int nread, fd;
 
-    /** 
+    /**
      * Controllo dei parametri in ingresso
      * Il numero dei parametri possono essere compresi tra 2 e 3 (compresi)
      * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt

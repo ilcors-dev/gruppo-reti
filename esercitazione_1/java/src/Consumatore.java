@@ -20,8 +20,8 @@ public class Consumatore {
         filter = args[0];
 
         try {
-            // se args.length == 2 allora il filtro è passato come parametro
-            // altrimenti è da leggere da un file
+            // se args.length == 2 allora il filtro è passato come parametro insieme al file
+            // altrimenti il file è passato mediante ridirezione input 
             if (args.length == 2) {
                 r = new FileReader(args[1]);
             } else {
