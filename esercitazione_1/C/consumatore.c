@@ -4,20 +4,29 @@
 #include <unistd.h>
 #include <string.h>
 
-#define MAX_STRING_LENGTH 256
 /**
  * Il consumatore è un filtro a caratteri:
  * prende in input il file passato come parametro o il file passato come redirezione in input
- * Scopo del programma 
-*/
-// consumatore.c e' un filtro a 
+ * Scopo del programma è la stampa del contenuto del file privata dei caratteri passati come parametro
+*/ 
 int main(int argc, char *argv[])
 {
-
+    /**
+     * Descrizione dei vari parametri:
+     * file_in: puntatore alla stringa nome del file da leggere
+     * read_char: carattere letto dal file
+     * delete_chars: puntatore alla stringa dei caratteri da rimuovere dalla stampa file
+     * nread: numero carattere letto dal file
+     * fd: file descriptor del file di input
+    */
     char *file_in, read_char, *delete_chars;
     int nread, fd;
 
-    //controllo numero argomenti
+    /** 
+     * Controllo dei parametri in ingresso
+     * Il numero dei parametri possono essere compresi tra 2 e 3 (compresi)
+     * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
+    */
     if (argc < 2 || argc > 3)
     {
         perror("numero di argomenti sbagliato");
@@ -26,7 +35,7 @@ int main(int argc, char *argv[])
 
     delete_chars = argv[1];
 
-    if (argc == 3)
+    if (argc == 3) //Caso 1: file passato come parametro
     {
         file_in = argv[2];
         fd = open(file_in, O_RDONLY);
@@ -36,15 +45,15 @@ int main(int argc, char *argv[])
             exit(2);
         }
     }
-    else
+    else //Caso 2: file passato mediante redirezione input
     {
-        fd = 0; //File descriptor stdin
+        fd = 0; //Associo file descriptor dello stdin
     }
     while ((nread = read(fd, &read_char, sizeof(char)))) /* Fino ad EOF*/
     {
         if (nread >= 0)
         {
-            if ((strchr(delete_chars, read_char)) == NULL)
+            if ((strchr(delete_chars, read_char)) == NULL) //Verifico che carattere letto non appartenga a stringa caratteri da rimuovere dall'output
                 putchar(read_char);
         }
         else
