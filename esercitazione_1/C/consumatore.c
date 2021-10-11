@@ -9,53 +9,39 @@
 
 /**
  * Il consumatore è un filtro a caratteri:
- * prende in input il file passato come parametro o il file passato come redirezione in input
- * Scopo del programma è la stampa del contenuto del file privata dei caratteri passati come parametro
+ * Prende in input il file passato come secondo parametro o passato come redirezione in input
+ * Scopo del programma è la stampa del contenuto del file privata dei caratteri passati come primo parametro - da cancellare dall'output
  * 
  * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
-*/ 
+*/
 int main(int argc, char *argv[])
 {
     /**
      * Descrizione delle variabili:
-     * file_in: puntatore alla stringa nome del file da leggere
+     * file_in: puntatore alla stringa nome del file da leggere - secondo parametro invocazione o stdin
      * read_char: carattere letto dal file
-     * delete_chars: puntatore alla stringa dei caratteri da rimuovere dalla stampa file
-     * nread: numero carattere letto dal file
+     * delete_chars: stringa filtrata dei caratteri da eliminare dal file - senza duplicati
+     * tempC: carattere temporaneo usato per verificare presenza duplicati stringa primo parametro (caratteri da rimuovere)
+     * nread: numero carattero letto dal file
      * fd: file descriptor del file di input
+     * count: dimensione stringa filtrata caratteri da eliminare
+     * dimS: dimensione stringa primo parametro caratteri da eliminare 
     */
-    char *file_in, read_char, delete_chars[MAX_STRING_LENGTH];
+    char *file_in, read_char, delete_chars[MAX_STRING_LENGTH], tempC;
     int nread, fd, count, dimS;
 
     /** 
-     * Controllo dei parametri in ingresso
-     * Il numero dei parametri possono essere compresi tra 2 e 3 (compresi)
-     * Sintassi invocazione: ./consumatore stringa_caratteri_da_eliminare input_file.txt
+     * Controllo dei parametri di invocazione
+     * Il numero dei parametri possono essere compresi tra 2 e 3
+     * Sintassi invocazione: 
+     * ./consumatore stringa_caratteri_da_eliminare input_file.txt
+     * ./consumatore stringa_caratteri_da_eliminare < input_file.txt (redirezione)
     */
     if (argc < 2 || argc > 3)
     {
         perror("numero di argomenti sbagliato");
         exit(1);
     }
-
-
-    //Conversione dei caratteri della stringa nel rispettivo carattere maiuscolo
-    for (int index = 0; argv[1][index] != '\0'; ++index){
-		argv[1][index] = toupper(argv[1][index]);
-	}
-
-    count = 0;
-    dimS = strlen(argv[1]);
-    for (int i = 0; i < dimS; i++)
-    {
-        if(strchr(delete_chars,argv[1][i]) == NULL){
-            delete_chars[count]=argv[1][i];
-            count++;
-        }
-    }
-    delete_chars[count]='\0';
-    
-    printf("Stringa caratteri da rimuovere: %s\n", delete_chars);
 
     if (argc == 3) //Caso 1: file passato come parametro
     {
@@ -69,8 +55,22 @@ int main(int argc, char *argv[])
     }
     else //Caso 2: file passato mediante redirezione input
     {
-        fd = 0; //Associo file descriptor dello stdin
+        fd = 0; //Associo file descriptor dello stdin - indice 0 tabella
     }
+
+    count = 0;
+    dimS = strlen(argv[1]); //numero caratteri da rimuovere
+    for (int i = 0; i < dimS; i++)
+    {
+        tempC = toupper(argv[1][i]);
+        if (strchr(delete_chars, tempC) == NULL)
+        {
+            delete_chars[count] = tempC;
+            count++;
+        }
+    }
+    delete_chars[count] = '\0';
+
     while ((nread = read(fd, &read_char, sizeof(char)))) /* Fino ad EOF*/
     {
         if (nread >= 0)
