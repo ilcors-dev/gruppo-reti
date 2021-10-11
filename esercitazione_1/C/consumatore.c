@@ -5,18 +5,22 @@
 #include <string.h>
 
 #define MAX_STRING_LENGTH 256
-
-// consumatore.c e' un filtro
+/**
+ * Il consumatore è un filtro a caratteri:
+ * prende in input il file passato come parametro o il file passato come redirezione in input
+ * Scopo del programma 
+*/
+// consumatore.c e' un filtro a 
 int main(int argc, char *argv[])
 {
 
-    char *file_in, read_char, buf[MAX_STRING_LENGTH], *delete_chars;
+    char *file_in, read_char, *delete_chars;
     int nread, fd;
 
     //controllo numero argomenti
     if (argc < 2 || argc > 3)
     {
-        perror(" numero di argomenti sbagliato");
+        perror("numero di argomenti sbagliato");
         exit(1);
     }
 
