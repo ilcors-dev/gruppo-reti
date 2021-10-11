@@ -1,2 +1,3 @@
-questo è un file di prova.
-non sono 
+Ciao sono Bernardini Claudio
+Sto testando questo software
+Speriamo che funzioni correttamente
