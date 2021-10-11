@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+
 #define MAX_STRING_LENGTH 256
 
 /**
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
      * fd: file descriptor del file di input
     */
     char *file_in, read_char, delete_chars[MAX_STRING_LENGTH];
-    int nread, fd;
+    int nread, fd, count, dimS;
 
     /** 
      * Controllo dei parametri in ingresso
@@ -37,25 +38,23 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    /*proposta di controllo by giangiu
-    int count=0;
-    for (int i = 0; i < strlen(argv[1]); i++)
+
+    //Conversione dei caratteri della stringa nel rispettivo carattere maiuscolo
+    for (int index = 0; argv[1][index] != '\0'; ++index){
+		argv[1][index] = toupper(argv[1][index]);
+	}
+
+    count = 0;
+    dimS = strlen(argv[1]);
+    for (int i = 0; i < dimS; i++)
     {
-        if(strchr(delete_chars,toupper(argv[1][i]))==NULL && (argv[1][i]>'A' && argv[1][i]<'Z' || argv[1][i]>'a' && argv[1][i]<'z')){
-            delete_chars[count]=toupper(argv[1][i]);
+        if(strchr(delete_chars,argv[1][i]) == NULL){
+            delete_chars[count]=argv[1][i];
             count++;
         }
     }
     delete_chars[count]='\0';
-    */
-
-    //delete_chars = argv[1];
-
-    //Conversione dei caratteri della stringa nel rispettivo carattere maiuscolo
-    for (int index = 0; delete_chars[index] != '\0'; ++index){
-		delete_chars[index] = toupper(delete_chars[index]);
-	}
-
+    
     printf("Stringa caratteri da rimuovere: %s\n", delete_chars);
 
     if (argc == 3) //Caso 1: file passato come parametro
