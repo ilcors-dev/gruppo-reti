@@ -18,6 +18,7 @@ public class Produttore {
         String inputl = null;
         try {
             fout = new FileWriter(args[0]);
+            System.out.println("Inserisci linee del file - [EOF per terminare]:");
             while ((inputl = in.readLine()) != null) {
                 inputl += System.lineSeparator();
                 fout.write(inputl, 0, inputl.length());
