@@ -65,7 +65,7 @@ public class Produttore {
 ```java
 public class Consumatore {
     public static void main(String[] args) {
-        String filter = null;
+        String filter = "";
         FileReader r = null;
         int x;
         char ch;
@@ -76,7 +76,15 @@ public class Consumatore {
             System.exit(0);
         }
 
-        filter = args[0];
+        // rimuoviamo eventuali caratteri duplicati dal parametro filtro passato dall'utente
+        for (int i = 0; i < args[0].length(); i++) {
+            char atIndex = args[0].charAt(i);
+            if (filter.indexOf(atIndex) == -1) {
+                filter += atIndex;
+            }
+        }
+
+        System.out.println("Filtro specificato: " + filter + "\n");
 
         try {
             // se args.length == 2 allora il filtro è passato come parametro insieme al file
