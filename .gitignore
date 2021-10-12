@@ -1,6 +1,6 @@
 ./**/*/.iml
 ./**/*/.xml
 ./**/*/.idea
-./**/*/.DS_Store
 .idea
 .out
+.DS_Store
