@@ -87,7 +87,6 @@ public class DiscoveryServer {
         }
 
         String nomeFile = null;
-        int numLinea = -1;
         StringTokenizer tokenizer = null;
 
         // attesa di richieste dai Client
@@ -96,28 +95,14 @@ public class DiscoveryServer {
                 buf = new byte[256];
                 System.out.println("\n[DiscoveryServer] In attesa di richieste...");
 
-                try {
-                    packet.setData(buf);
-                    socket.receive(packet);
-                    System.out.println("[DiscoveryServer] Richiesta ricevuta");
-                } catch (IOException e) {
-                    System.err.println("[DiscoveryServer] Problemi nella ricezione del datagramma: "
-                            + e.getMessage());
-                    e.printStackTrace();
-                    continue;
-                }
+                packet.setData(buf);
+                socket.receive(packet);
+                System.out.println("[DiscoveryServer] Richiesta ricevuta");
 
                 // ricezione richiesta dal client del file x
-                try {
-                    tokenizer = new StringTokenizer(ByteUtility.bytesToStringUTF(packet.getData()));
-                    nomeFile = tokenizer.nextToken();
-                    System.out.println("[DiscoveryServer] Richiesto file " + nomeFile);
-                } catch (IOException e) {
-                    System.err.println("[DiscoveryServer] Problemi nella lettura della richiesta: "
-                            + nomeFile + " " + numLinea);
-                    e.printStackTrace();
-                    continue;
-                }
+                tokenizer = new StringTokenizer(ByteUtility.bytesToStringUTF(packet.getData()));
+                nomeFile = tokenizer.nextToken();
+                System.out.println("[DiscoveryServer] Richiesto file " + nomeFile);
 
                 // ricerca della porta corrispondente al file richiesto
                 int foundPort = -1;
@@ -130,21 +115,17 @@ public class DiscoveryServer {
 
                 // invio della porta trovata del RowSwapServer al client
                 // se non è stata trovata sarà inviato -1
-                try {
-                    if (foundPort == -1) {
-                        packet.setData(ByteUtility.intToBytes(-1));
-                    } else {
-                        packet.setData(ByteUtility.intToBytes(foundPort));
-                    }
-
-                    socket.send(packet);
-                } catch (IOException e) {
-                    System.err.println("[DiscoveryServer] Problemi nell'invio della risposta: "
-                            + e.getMessage());
-                    e.printStackTrace();
-                    continue;
+                if (foundPort == -1) {
+                    packet.setData(ByteUtility.intToBytes(-1));
+                } else {
+                    packet.setData(ByteUtility.intToBytes(foundPort));
                 }
+                socket.send(packet);
             }
+        } catch (IOException e) {
+            System.err.println("[DiscoveryServer] Problemi nella lettura: "
+                    + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

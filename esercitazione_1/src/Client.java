@@ -103,38 +103,23 @@ public class Client {
                     System.out.println("Inserisci righe da scambiare (separate da '-'): ");
                 } else {
                     // invio richiesta al RowSwapServer con le righe da swappare
-                    try {
-                        packet.setPort(rowSwapServerPort);
-                        packet.setData(ByteUtility.stringUTFToBytes(readInput));
-                        socket.send(packet);
-                        System.out.println("Richiesta inviata al server [RowSwap-" + rowSwapServerPort + "]");
-                    } catch (IOException e) {
-                        System.out.println("Problemi nell'invio della richiesta: ");
-                        e.printStackTrace();
-                        System.out.println("Riprova inserendo nuove righe.");
-                    }
+                    packet.setPort(rowSwapServerPort);
+                    packet.setData(ByteUtility.stringUTFToBytes(readInput));
+                    socket.send(packet);
+                    System.out.println("Richiesta inviata al server [RowSwap-" + rowSwapServerPort + "]");
 
-                    try {
-                        packet.setData(buf);
-                        socket.receive(packet);
-                    } catch (IOException e) {
-                        System.out.println("Problemi nella ricezione del datagramma: ");
-                        e.printStackTrace();
-                        System.out.println("Riprova inserendo nuove righe.");
-                    }
+                    packet.setData(buf);
+                    socket.receive(packet);
 
                     // ricezione esito dello swap dal RowSwapServer
-                    try {
-                        int requestStatus = ByteUtility.bytesToInt(packet.getData());
-                        System.out.println("Il server ha risposto con un codice di " + (requestStatus < 0 ? "errore" : "successo"));
-                        System.out.println("Inserisci righe da scambiare (separate da '-'): ");
-                    } catch (IOException e) {
-                        System.out.println("Problemi nella lettura della risposta: ");
-                        e.printStackTrace();
-                        System.out.println("Riprova inserendo nuove righe.");
-                    }
+                    int requestStatus = ByteUtility.bytesToInt(packet.getData());
+                    System.out.println("Il server ha risposto con un codice di " + (requestStatus < 0 ? "errore" : "successo"));
+                    System.out.println("Inserisci righe da scambiare (separate da '-'): ");
                 }
             }
+        } catch (IOException e) {
+            System.out.println("Problemi nella lettura / invio della richiesta: ");
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

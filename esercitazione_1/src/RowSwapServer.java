@@ -44,28 +44,15 @@ public class RowSwapServer extends Thread {
                 buf = new byte[256];
                 System.out.println("[RowSwapServer-" + port + "] In attesa di richieste...");
 
-                try {
-                    packet.setData(buf);
-                    socket.receive(packet);
-                } catch (IOException e) {
-                    System.err.println("[RowSwapServer-" + port + "] Problemi nella ricezione del datagramma: "
-                            + e.getMessage());
-                    e.printStackTrace();
-                    continue;
-                }
+                packet.setData(buf);
+                socket.receive(packet);
 
                 // ricezione richiesta con le righe da swappare
-                try {
-                    tokenizer = new StringTokenizer(ByteUtility.bytesToStringUTF(packet.getData()), "-");
-                    aLineIndex = Integer.parseInt(tokenizer.nextToken());
-                    bLineIndex = Integer.parseInt(tokenizer.nextToken());
+                tokenizer = new StringTokenizer(ByteUtility.bytesToStringUTF(packet.getData()), "-");
+                aLineIndex = Integer.parseInt(tokenizer.nextToken());
+                bLineIndex = Integer.parseInt(tokenizer.nextToken());
 
-                    System.out.println("[RowSwapServer-" + port + "] Ricevuta richiesta di swap di righe: swapping riga " + aLineIndex + " con riga " + bLineIndex);
-                } catch (Exception e) {
-                    System.err.println("[RowSwapServer-" + port + "] Problemi nella lettura della richiesta");
-                    e.printStackTrace();
-                    continue;
-                }
+                System.out.println("[RowSwapServer-" + port + "] Ricevuta richiesta di swap di righe: swapping riga " + aLineIndex + " con riga " + bLineIndex);
 
                 // swap delle righe
                 int status = LineUtility.swapLines(this.file, aLineIndex, bLineIndex);
@@ -74,6 +61,10 @@ public class RowSwapServer extends Thread {
                 packet.setData(ByteUtility.intToBytes(status));
                 socket.send(packet);
             }
+        } catch (IOException e) {
+            System.err.println("[RowSwapServer-" + port + "] Problemi nella lettura: "
+                    + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
