@@ -86,12 +86,12 @@ public class DiscoveryServer {
             System.exit(1);
         }
 
+        String nomeFile = null;
+        int numLinea = -1;
+        StringTokenizer tokenizer = null;
+
         // attesa di richieste dai Client
         try {
-            String nomeFile = null;
-            int numLinea = -1;
-            StringTokenizer tokenizer = null;
-
             while (true) {
                 buf = new byte[256];
                 System.out.println("\n[DiscoveryServer] In attesa di richieste...");
