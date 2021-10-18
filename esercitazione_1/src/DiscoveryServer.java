@@ -17,6 +17,7 @@ public class DiscoveryServer {
         byte[] buf = new byte[256];
         int port = -1;
 
+        // check argomenti
         if (((args.length % 2) == 0) || (args.length < 3)) {
             System.out.println("Usage: java DiscoveryServer serverPort " +
                     "nomeFile1 port1" +
@@ -26,6 +27,7 @@ public class DiscoveryServer {
             System.exit(-1);
         }
 
+        // salvataggio porta del DiscoveryServer
         port = Integer.parseInt(args[0]);
 
         if (port < 1024 || port > 65535) {
@@ -73,6 +75,7 @@ public class DiscoveryServer {
             index++;
         }
 
+        // creazione socket
         try {
             socket = new DatagramSocket(port);
             packet = new DatagramPacket(buf, buf.length);
@@ -83,6 +86,7 @@ public class DiscoveryServer {
             System.exit(1);
         }
 
+        // attesa di richieste dai Client
         try {
             String nomeFile = null;
             int numLinea = -1;
@@ -103,6 +107,7 @@ public class DiscoveryServer {
                     continue;
                 }
 
+                // ricezione richiesta dal client del file x
                 try {
                     tokenizer = new StringTokenizer(ByteUtility.bytesToStringUTF(packet.getData()));
                     nomeFile = tokenizer.nextToken();
@@ -114,6 +119,7 @@ public class DiscoveryServer {
                     continue;
                 }
 
+                // ricerca della porta corrispondente al file richiesto
                 int foundPort = -1;
 
                 for (int i = 0; i < files.length && files[i] != null; i++) {
@@ -122,6 +128,8 @@ public class DiscoveryServer {
                     }
                 }
 
+                // invio della porta trovata del RowSwapServer al client
+                // se non è stata trovata sarà inviato -1
                 try {
                     if (foundPort == -1) {
                         packet.setData(ByteUtility.intToBytes(-1));

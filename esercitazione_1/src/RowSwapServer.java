@@ -17,12 +17,13 @@ public class RowSwapServer extends Thread {
     public void run() {
         super.run();
 
-        System.out.println("RowSwap su porta " + this.port + " avviato");
+        System.out.println("[RowSwapServer-" + port + "] avviato");
 
         DatagramSocket socket = null;
         DatagramPacket packet = null;
         byte[] buf = new byte[256];
 
+        // creazione socket
         try {
             socket = new DatagramSocket(port);
             packet = new DatagramPacket(buf, buf.length);
@@ -37,6 +38,7 @@ public class RowSwapServer extends Thread {
         int bLineIndex = -1;
         StringTokenizer tokenizer = null;
 
+        // attesa di richieste
         try {
             while (true) {
                 buf = new byte[256];
@@ -52,6 +54,7 @@ public class RowSwapServer extends Thread {
                     continue;
                 }
 
+                // ricezione richiesta con le righe da swappare
                 try {
                     tokenizer = new StringTokenizer(ByteUtility.bytesToStringUTF(packet.getData()), "-");
                     aLineIndex = Integer.parseInt(tokenizer.nextToken());
@@ -64,7 +67,9 @@ public class RowSwapServer extends Thread {
                     continue;
                 }
 
+                // swap delle righe
                 int status = LineUtility.swapLines(this.file, aLineIndex, bLineIndex);
+
                 System.out.println("[RowSwapServer-" + port + "] Esito swap: " + (status < 0 ? "errore" : "successo") + ". Invio risposta al client..");
                 packet.setData(ByteUtility.intToBytes(status));
                 socket.send(packet);
