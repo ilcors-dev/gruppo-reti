@@ -33,7 +33,7 @@ public class LineUtility {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            while ((line = reader.readLine()) != null) {
+            while (((line = reader.readLine()) != null) && (a == null || b == null)) {
                 if (i == aIndex) {
                     a = line;
                 } else if (i == bIndex) {
