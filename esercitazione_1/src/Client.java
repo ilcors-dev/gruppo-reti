@@ -33,7 +33,6 @@ public class Client {
         DatagramSocket socket = null;
         DatagramPacket packet = null;
         byte[] buf = new byte[256];
-        int rowSwapServerPort = -1;
 
         // creazione socket
         try {
@@ -69,6 +68,7 @@ public class Client {
             System.exit(-1);
         }
 
+        int rowSwapServerPort = -1;
         // ricezione risposta dal DiscoveryServer con l'eventuale porta del corrispondente RowSwapServer
         try {
             rowSwapServerPort = ByteUtility.bytesToInt(packet.getData());
