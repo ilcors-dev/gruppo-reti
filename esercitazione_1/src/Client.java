@@ -12,7 +12,7 @@ public class Client {
         int port = -1;
         String fileName = null;
 
-// controllo args e salvataggio parametri
+        // controllo args e salvataggio parametri
         try {
             if (args.length != 3) {
                 System.out.println("Usage: java Client serverIP serverPort fileName");
