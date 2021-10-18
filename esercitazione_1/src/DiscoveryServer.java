@@ -61,8 +61,6 @@ public class DiscoveryServer {
         }
 
         // init dei RowSwapServer
-        index = 0;
-
         for (int i = 1; i < args.length; i += 2) {
             File file = new File(args[i]);
 
@@ -72,7 +70,6 @@ public class DiscoveryServer {
             }
 
             new RowSwapServer(file, Integer.parseInt(args[i + 1])).start();
-            index++;
         }
 
         // creazione socket
