@@ -9,75 +9,75 @@
 import java.io.*;
 
 public class LineUtility {
+    static final int EXCEPTION_THROWN = -1;
+    static final int SAME_INDEX = -2;
+    static final int LINE_NOT_FOUND = -3;
 
-	/**
-	 * metodo per recuperare una certa linea di un certo file
-	 * @param nomeFile
-	 * @param numLinea
-	 * @return linea letta o "Linea non trovata..."
-	 */
-	static String getLine(String nomeFile, int numLinea) {
-		String linea = null;
-		BufferedReader in = null;
+    /**
+     * Swappa due linee di un file passato come parametro.
+     * @param file
+     * @param aIndex indice della riga da scambiare con bIndex
+     * @param bIndex indice della riga da scambiare con aIndex
+     * @return 0 => se tutto è andato bene, < 0 se qualcosa è andato storto
+     */
+    static int swapLines(File file, int aIndex, int bIndex) {
+        if (aIndex == bIndex) {
+            return SAME_INDEX;
+        }
 
-	if( numLinea <= 0 ) 
-		return linea = "Linea non trovata: numero linea maggiore di 0.";
-	// associazione di uno stream di input al file da cui estrarre le linee
-	try {
-		in = new BufferedReader(new FileReader(nomeFile));
-		System.out.println("File aperto: " + nomeFile);
-	} catch (FileNotFoundException e) {
-		System.out.println("File non trovato: ");
-		e.printStackTrace();
-		return linea = "File non trovato";
-	}
-	try {
-		for (int i = 1; i <= numLinea; i++) {
-			linea = in.readLine();
-			if (linea == null) {
-				linea = "Linea non trovata";
-				in.close();
-				return linea;
-			}
-		}
-	} catch (IOException e) {
-		System.out.println("Linea non trovata: ");
-		e.printStackTrace();
-		return linea = "Linea non trovata";
-	}
-	System.out.println("Linea selezionata: " + linea);
-	
-	try {
-		in.close();
-	}
-	catch (IOException e) {
-		System.out.println("Errore nella chiusura del reader");
-		e.printStackTrace();
-	}
-    return linea;
-  } // getLine
+        int i = 1;
+        String a = null;
+        String b = null;
+        String line = null;
 
-	/**
-	 * metodo per recuperare la linea successiva di un file aperto in precedenza
-	 * @param in
-	 * @return linea
-	 */
-	static String getNextLine(BufferedReader in) {
-		String linea = null;
-		try {
-			if ((linea = in.readLine()) == null) {
-				in.close();
-				linea = "Nessuna linea disponibile";
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println("File non trovato: ");
-			e.printStackTrace();
-			return linea = "File non trovato";
-		} catch (IOException e) {
-			System.out.println("Problemi nell'estrazione della linea: ");
-			e.printStackTrace();
-			linea = "Nessuna linea disponibile";
-		}
-		return linea;
-	} //getNextLine
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            while ((line = reader.readLine()) != null) {
+                if (i == aIndex) {
+                    a = line;
+                } else if (i == bIndex) {
+                    b = line;
+                }
+                i++;
+            }
+
+            reader.close();
+
+            if (a == null || b == null) {
+                return LINE_NOT_FOUND;
+            }
+
+            reader = new BufferedReader(new FileReader(file));
+
+            StringBuilder builder = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                if (line.equals(a)) {
+                    builder.append(b);
+                } else if (line.equals(b)) {
+                    builder.append(a);
+                } else {
+                    builder.append(line);
+                }
+                builder.append(System.lineSeparator());
+            }
+
+            reader.close();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+
+            writer.write(builder.toString());
+
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return EXCEPTION_THROWN;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return EXCEPTION_THROWN;
+        }
+
+        return 0;
+    }
 }
