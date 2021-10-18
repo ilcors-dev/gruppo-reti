@@ -94,7 +94,6 @@ public class Client {
 
         System.out.println("^D(Unix)/^Z(Win)+invio per uscire.");
         System.out.println("Inserisci righe da scambiare (separate da '-'): ");
-
         try {
             while ((readInput = stdIn.readLine()) != null) {
                 // check dell'input dell'utente

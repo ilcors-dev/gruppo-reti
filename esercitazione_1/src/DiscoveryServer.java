@@ -88,7 +88,6 @@ public class DiscoveryServer {
 
         String nomeFile = null;
         StringTokenizer tokenizer = null;
-
         // attesa di richieste dai Client
         try {
             while (true) {
@@ -106,20 +105,14 @@ public class DiscoveryServer {
 
                 // ricerca della porta corrispondente al file richiesto
                 int foundPort = -1;
-
                 for (int i = 0; i < files.length && files[i] != null; i++) {
                     if (files[i].equals(nomeFile)) {
                         foundPort = ports[i];
                     }
                 }
-
                 // invio della porta trovata del RowSwapServer al client
                 // se non è stata trovata sarà inviato -1
-                if (foundPort == -1) {
-                    packet.setData(ByteUtility.intToBytes(-1));
-                } else {
-                    packet.setData(ByteUtility.intToBytes(foundPort));
-                }
+                packet.setData(ByteUtility.intToBytes(foundPort));
                 socket.send(packet);
             }
         } catch (IOException e) {

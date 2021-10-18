@@ -37,13 +37,11 @@ public class RowSwapServer extends Thread {
         int aLineIndex = -1;
         int bLineIndex = -1;
         StringTokenizer tokenizer = null;
-
         // attesa di richieste
         try {
             while (true) {
                 buf = new byte[256];
                 System.out.println("[RowSwapServer-" + port + "] In attesa di richieste...");
-
                 packet.setData(buf);
                 socket.receive(packet);
 
@@ -56,7 +54,6 @@ public class RowSwapServer extends Thread {
 
                 // swap delle righe
                 int status = LineUtility.swapLines(this.file, aLineIndex, bLineIndex);
-
                 System.out.println("[RowSwapServer-" + port + "] Esito swap: " + (status < 0 ? "errore" : "successo") + ". Invio risposta al client..");
                 packet.setData(ByteUtility.intToBytes(status));
                 socket.send(packet);
