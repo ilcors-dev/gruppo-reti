@@ -78,6 +78,7 @@ public class Client {
                 System.exit(-1);
             }
 
+            packet.setPort(rowSwapServerPort);
             System.out.println("RowSwapServer trovato alla porta " + rowSwapServerPort + "!");
         } catch (IOException e) {
             System.out.println("Problemi nella lettura della risposta: ");
@@ -101,7 +102,6 @@ public class Client {
                     System.out.println("Gli indici devono essere numerici e devono essere separati da un solo '-'!");
                 } else {
                     // invio richiesta al RowSwapServer con le righe da swappare
-                    packet.setPort(rowSwapServerPort);
                     packet.setData(ByteUtility.stringUTFToBytes(readInput));
                     socket.send(packet);
                     System.out.println("Richiesta inviata al server [RowSwap-" + rowSwapServerPort + "]");
