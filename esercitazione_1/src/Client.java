@@ -99,7 +99,6 @@ public class Client {
                 // check dell'input dell'utente
                 if (!patternChecker.matcher(readInput).matches()) {
                     System.out.println("Gli indici devono essere numerici e devono essere separati da un solo '-'!");
-                    System.out.println("Inserisci righe da scambiare (separate da '-'): ");
                 } else {
                     // invio richiesta al RowSwapServer con le righe da swappare
                     packet.setPort(rowSwapServerPort);
@@ -113,8 +112,8 @@ public class Client {
                     // ricezione esito dello swap dal RowSwapServer
                     int requestStatus = ByteUtility.bytesToInt(packet.getData());
                     System.out.println("Il server ha risposto con un codice di " + (requestStatus < 0 ? "errore" : "successo"));
-                    System.out.println("Inserisci righe da scambiare (separate da '-'): ");
                 }
+                System.out.println("Inserisci righe da scambiare (separate da '-'): ");
             }
         } catch (IOException e) {
             System.out.println("Problemi nella lettura / invio della richiesta: ");
