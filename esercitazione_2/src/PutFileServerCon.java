@@ -1,5 +1,4 @@
-package src;
-// PutFileServer Concorrente
+package src;// PutFileServer Concorrente
 
 import java.io.*;
 import java.net.*;
@@ -52,62 +51,66 @@ class PutFileServerThread extends Thread{
 				e.printStackTrace();
 				return;
 			}
-			
+
 			FileOutputStream outFile = null;
-			String esito;
-			// file check
-			if (nomeFile == null) {
+			String esito = "salta";
+			if (nomeFile.isEmpty()) {
 				System.out.println("Problemi nella ricezione del nome del file: ");
 				clientSocket.close();
-				return;
 			} else {
 				File curFile = new File(nomeFile);
 				if (curFile.exists()) {
 					try {
-						esito = "Sovrascritto file esistente";
-						// distruggo il file da sovrascrivere
 						curFile.delete();
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						System.out.println("Problemi nella notifica di file esistente: ");
 						e.printStackTrace();
-						return;
 					}
-				} else esito = "Creato nuovo file";
-				outFile = new FileOutputStream(nomeFile);
+				} else {
+					esito = "attiva";
+					outFile = new FileOutputStream(nomeFile);
+				}
+				outSock.writeUTF(esito);
 			}
-			
-			//ciclo di ricezione dal client, salvataggio file e stamapa a video
-			try {
-				System.out.println("Ricevo il file " + nomeFile + ": \n");
-				FileUtility.trasferisci_a_byte_file_binario(inSock,
-						new DataOutputStream(outFile));
-				System.out.println("\nRicezione del file " + nomeFile + " terminata\n");
-				// chiusura file
-				outFile.close();
-				clientSocket.shutdownInput(); //chiusura socket (downstream)
-				outSock.writeUTF(esito + ", file salvato lato server");
-				outSock.flush();
-				clientSocket.shutdownOutput(); //chiusura socket (dupstream)
-				System.out.println("\nTerminata connessione con " + clientSocket);
-				clientSocket.close();
-			}
-			catch(SocketTimeoutException ste){
-				System.out.println("Timeout scattato: ");
-				ste.printStackTrace();
-				clientSocket.close();
-				System.out
-					.print("\n^D(Unix)/^Z(Win)+invio per uscire, solo invio per continuare: ");
-				return;          
-			}              
-			catch (Exception e) {
-				System.err
-					.println("\nProblemi durante la ricezione e scrittura del file: "
-						+ e.getMessage());
-				e.printStackTrace();
-				clientSocket.close();
-				System.out.println("Terminata connessione con " + clientSocket);
-				return;
+
+			if (esito.equals("attiva")) {
+				try {
+					long dimFileIndex;
+					long indexTemp;
+					dimFileIndex = inSock.readLong();
+
+					System.out.println("Ricevo il file " + nomeFile + ": \n");
+					while (dimFileIndex != 0) {
+						indexTemp = FileUtility.trasferisci_a_byte_file_binario(inSock,
+								new DataOutputStream(outFile));
+						dimFileIndex -= indexTemp;
+					}
+
+					System.out.println("\nRicezione del file " + nomeFile + " terminata\n");
+					// chiusura file
+					outFile.close();
+					clientSocket.shutdownInput(); //chiusura socket (downstream)
+					outSock.writeUTF(esito + ", file salvato lato server");
+					outSock.flush();
+					clientSocket.shutdownOutput(); //chiusura socket (dupstream)
+					System.out.println("\nTerminata connessione con " + clientSocket);
+					clientSocket.close();
+				} catch (SocketTimeoutException ste) {
+					System.out.println("Timeout scattato: ");
+					ste.printStackTrace();
+					clientSocket.close();
+					System.out
+							.print("\n^D(Unix)/^Z(Win)+invio per uscire, solo invio per continuare: ");
+					return;
+				} catch (Exception e) {
+					System.err
+							.println("\nProblemi durante la ricezione e scrittura del file: "
+									+ e.getMessage());
+					e.printStackTrace();
+					clientSocket.close();
+					System.out.println("Terminata connessione con " + clientSocket);
+					return;
+				}
 			}
 		}
 	    // qui catturo le eccezioni non catturate all'interno del while
@@ -123,7 +126,7 @@ class PutFileServerThread extends Thread{
 } // PutFileServerThread class
 
 public class PutFileServerCon {
-	public static final int PORT = 1050; //default port
+	public static final int PORT = 54321; //default port
 
 	public static void main(String[] args) throws IOException {
 
