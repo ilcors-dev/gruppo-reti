@@ -10,15 +10,16 @@ public class PutFileClient {
 		InetAddress addr = null;
 		int port = -1;
 		File directory = null;
+		long limitDimFile = -1;
 
 		try { // check args
-			if (args.length == 3) {
+			if (args.length == 4) {	
 				addr = InetAddress.getByName(args[0]);
 				port = Integer.parseInt(args[1]);
 				directory = new File(args[2]);
-				//dim soglia file
+				limitDimFile = Long.parseLong(args[3]);
 			} else {
-				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath");
+				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath limitDimFile");
 				System.exit(1);
 			}
 		} // try
@@ -26,8 +27,16 @@ public class PutFileClient {
 		catch (Exception e) {
 			System.out.println("Problemi, i seguenti: ");
 			e.printStackTrace();
-			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath");
+			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath limitDimFile");
 			System.exit(2);
+		}
+
+		// controllare funzione altri 
+
+		// verifico che il valore di soglia sia nagguire du 0
+		if (limitDimFile < 0) {
+			System.out.println("Usage: Limit dim byte file is negative");
+			System.exit(6);
 		}
 
 		// verifico che sia una directory
