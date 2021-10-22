@@ -1,5 +1,6 @@
 // PutFileClient.java
 package src;
+
 import java.net.*;
 import java.io.*;
 
@@ -13,8 +14,8 @@ public class PutFileClient {
 		long limitDimFile = -1;
 
 		try { // check args
-			if (args.length == 4) {	
-				 //controllo ip
+			if (args.length == 4) {
+				// controllo ip
 				addr = InetAddress.getByName(args[0]);
 				port = Integer.parseInt(args[1]);
 				directory = new File(args[2]);
@@ -32,11 +33,10 @@ public class PutFileClient {
 			System.exit(2);
 		}
 
-		// controllare funzione altri 
-
+		// controllare funzione altri
 
 		// verifico porta corretta
-		if (port < 1024 || port > 65545) { //verificare limite superiore
+		if (port < 1024 || port > 65545) { // verificare limite superiore
 			System.out.println("Usage: port is smaller than 1024");
 			System.exit(7);
 		}
@@ -81,11 +81,11 @@ public class PutFileClient {
 			int count;
 			// numero di file complessivamente nella cartella (Attenzione sempre alle
 			// sottodirectory)
-			
+
 			System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
 
 			// se ho un file ed è vuoto non ha senso aprire socket
-			if (numFileDir == 1 && (filesDirectory[0].length() == 0 || filesDirectory[0].isDirectory()) ) {
+			if (numFileDir == 1 && (filesDirectory[0].length() == 0 || filesDirectory[0].isDirectory())) {
 				System.out.println("Directory " + args[0] + ": un solo file vuoto da scrivere, bye!");
 				System.exit(0);
 			} else { // aperutra della socket
@@ -107,11 +107,12 @@ public class PutFileClient {
 					e.printStackTrace();
 				}
 			}
+			long dimFile = -1;
 			for (count = 0; count < numFileDir; count++) {
 				// se è un file allora lo scrivo sulla socket
 				if (filesDirectory[count].isFile()) {
-					long dimFile = -1;
-					if ((dimFile = filesDirectory[count].length()) == 0) {
+					dimFile = filesDirectory[count].length();
+					if (dimFile >= limitDimFile) {
 						/* Invio file richiesto e attesa esito dal server */
 						// creazione stream di input da file
 						try {
@@ -143,42 +144,45 @@ public class PutFileClient {
 							continue;
 						}
 
-						System.out.println("Inizio la trasmissione di " + nomeFile);
-
-						//trasmissione dimensione
-
-						// trasferimento file
-						try {
-							// FileUtility.trasferisci_a_linee_UTF_e_stampa_a_video(new
-							// DataInputStream(inFile), outSock);
-							FileUtility.trasferisci_a_byte_file_binario(new DataInputStream(inFile), outSock);
-							inFile.close(); // chiusura file
-							socket.shutdownOutput(); // chiusura socket in upstream, invio l'EOF al server
-							System.out.println("Trasmissione di " + nomeFile + " terminata ");
-						} catch (SocketTimeoutException ste) {
-							System.out.println("Timeout scattato: ");
-							ste.printStackTrace();
-							socket.close();
-							System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, oppure immetti nome file: ");
-							// il client continua l'esecuzione riprendendo dall'inizio del ciclo
-							continue;
-						} catch (Exception e) {
-							System.out.println("Problemi nell'invio di " + nomeFile + ": ");
-							e.printStackTrace();
-							socket.close();
-							System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, oppure immetti nome file: ");
-							// il client continua l'esecuzione riprendendo dall'inizio del ciclo
-							continue;
-						}
-
+						// attendo direttive server
 						// ricezione esito
 						String esito;
 						try {
 							esito = inSock.readUTF();
-							System.out.println("Esito trasmissione: " + esito);
-							// chiudo la socket in downstream
-							socket.shutdownInput();
-							System.out.println("Terminata la chiusura della socket: " + socket);
+							System.out.println("Esito trasmissione nome file: " + esito);
+							if (esito.equalsIgnoreCase("salta")) {
+								System.out.println("File " + nomeFile + " già presente sul server!");
+								continue;
+							} else if (esito.equalsIgnoreCase("attiva")) {
+								
+
+								
+								try {
+									// trasmissione dimensione
+									outSock.writeLong(dimFile);
+									// FileUtility.trasferisci_a_linee_UTF_e_stampa_a_video(new
+									// DataInputStream(inFile), outSock);
+									// trasferimento file
+									FileUtility.trasferisci_a_byte_file_binario(new DataInputStream(inFile), outSock);
+									inFile.close(); // chiusura file
+									socket.shutdownOutput(); // chiusura socket in upstream, invio l'EOF al server
+									System.out.println("Trasmissione di " + nomeFile + " terminata ");
+								} catch (SocketTimeoutException ste) {
+									System.out.println("Timeout scattato: ");
+									ste.printStackTrace();
+									socket.close();
+									System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, oppure immetti nome file: ");
+									// il client continua l'esecuzione riprendendo dall'inizio del ciclo
+									continue;
+								} catch (Exception e) {
+									System.out.println("Problemi nell'invio di " + nomeFile + ": ");
+									e.printStackTrace();
+									socket.close();
+									System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, oppure immetti nome file: ");
+									// il client continua l'esecuzione riprendendo dall'inizio del ciclo
+									continue;
+								}
+							}
 						} catch (SocketTimeoutException ste) {
 							System.out.println("Timeout scattato: ");
 							ste.printStackTrace();
@@ -194,6 +198,8 @@ public class PutFileClient {
 							continue;
 							// il client continua l'esecuzione riprendendo dall'inizio del ciclo
 						}
+
+						System.out.println("Inizio la trasmissione di " + nomeFile);
 
 						// tutto ok, pronto per nuova richiesta
 						System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, oppure immetti nome file: ");
