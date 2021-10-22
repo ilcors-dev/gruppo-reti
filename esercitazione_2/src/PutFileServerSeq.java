@@ -35,10 +35,8 @@ public class PutFileServerSeq {
 			System.exit(1);
 		}
 
-		/* preparazione socket e in/out stream */
 		ServerSocket serverSocket = null;
 		try {
-//			serverSocket = new ServerSocket(port,2);
 			serverSocket = new ServerSocket(port);
 			serverSocket.setReuseAddress(true);
 			System.out.println("PutFileServerSeq: avviato ");
