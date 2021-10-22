@@ -14,6 +14,7 @@ public class PutFileClient {
 
 		try { // check args
 			if (args.length == 4) {	
+				 //controllo ip
 				addr = InetAddress.getByName(args[0]);
 				port = Integer.parseInt(args[1]);
 				directory = new File(args[2]);
@@ -32,6 +33,13 @@ public class PutFileClient {
 		}
 
 		// controllare funzione altri 
+
+
+		// verifico porta corretta
+		if (port < 1024 || port > 65545) { //verificare limite superiore
+			System.out.println("Usage: port is smaller than 1024");
+			System.exit(7);
+		}
 
 		// verifico che il valore di soglia sia nagguire du 0
 		if (limitDimFile < 0) {
