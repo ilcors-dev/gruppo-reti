@@ -59,8 +59,7 @@ public class PutFileClient {
 			System.exit(4);
 		}
 
-		// elenco file contenuti nella directory (Attenzione! Potrebbero essere anche
-		// directory)
+		// elenco file contenuti nella directory (Attenzione! Potrebbero essere anche directory)
 		File[] filesDirectory = directory.listFiles();
 
 		int numFileDir = -1;
@@ -68,6 +67,8 @@ public class PutFileClient {
 			System.out.println("Usage: Param directoryPath is empty");
 			System.exit(5);
 		}
+
+		System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
 
 		// oggetti utilizzati dal client per la comunicazione e la lettura del file
 		// locale
@@ -79,14 +80,9 @@ public class PutFileClient {
 
 		try {
 			int count;
-			// numero di file complessivamente nella cartella (Attenzione sempre alle
-			// sottodirectory)
-
-			System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
-
 			// se ho un file ed è vuoto non ha senso aprire socket
 			if (numFileDir == 1 && (filesDirectory[0].length() == 0 || filesDirectory[0].isDirectory())) {
-				System.out.println("Directory " + args[0] + ": un solo file vuoto da scrivere, bye!");
+				System.out.println("Directory " + args[0] + ": un solo file vuoto da scrivere o una directory, bye!");
 				System.exit(0);
 			} else { // aperutra della socket
 				// creazione socket
@@ -153,10 +149,7 @@ public class PutFileClient {
 							if (esito.equalsIgnoreCase("salta")) {
 								System.out.println("File " + nomeFile + " già presente sul server!");
 								continue;
-							} else if (esito.equalsIgnoreCase("attiva")) {
-								
-
-								
+							} else if (esito.equalsIgnoreCase("attiva")) {	
 								try {
 									// trasmissione dimensione
 									outSock.writeLong(dimFile);
@@ -165,7 +158,6 @@ public class PutFileClient {
 									// trasferimento file
 									FileUtility.trasferisci_a_byte_file_binario(new DataInputStream(inFile), outSock);
 									inFile.close(); // chiusura file
-									socket.shutdownOutput(); // chiusura socket in upstream, invio l'EOF al server
 									System.out.println("Trasmissione di " + nomeFile + " terminata ");
 								} catch (SocketTimeoutException ste) {
 									System.out.println("Timeout scattato: ");
@@ -199,8 +191,6 @@ public class PutFileClient {
 							// il client continua l'esecuzione riprendendo dall'inizio del ciclo
 						}
 
-						System.out.println("Inizio la trasmissione di " + nomeFile);
-
 						// tutto ok, pronto per nuova richiesta
 						System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, oppure immetti nome file: ");
 					} else {
@@ -217,6 +207,7 @@ public class PutFileClient {
 					continue;
 				}
 			}
+			socket.shutdownOutput(); // chiusura socket in upstream, invio l'EOF al server
 			socket.close();
 			System.out.println("PutFileClient: termino...");
 		}
