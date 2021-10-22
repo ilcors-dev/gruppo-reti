@@ -16,6 +16,7 @@ public class PutFileClient {
 				addr = InetAddress.getByName(args[0]);
 				port = Integer.parseInt(args[1]);
 				directory = new File(args[2]);
+				//dim soglia file
 			} else {
 				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath");
 				System.exit(1);
@@ -35,13 +36,6 @@ public class PutFileClient {
 			System.exit(3);
 		}
 
-		// verifico che non sia vuota
-		System.out.println(directory.length());
-		if (directory.length() <= 64) { // DA verificare che 64 vada bene per tutti sisitemi
-			System.out.println("Usage: Param directoryPath is empty");
-			System.exit(3);
-		}
-
 		// verifico diritti di lettura
 		if (!directory.canRead()) {
 			System.out.println("Usage: Can't read in directoryPath");
@@ -51,6 +45,12 @@ public class PutFileClient {
 		// elenco file contenuti nella directory (Attenzione! Potrebbero essere anche
 		// directory)
 		File[] filesDirectory = directory.listFiles();
+
+		int numFileDir = -1;
+		if ((numFileDir = filesDirectory.length) == 0) {
+			System.out.println("Usage: Param directoryPath is empty");
+			System.exit(5);
+		}
 
 		// oggetti utilizzati dal client per la comunicazione e la lettura del file
 		// locale
@@ -64,11 +64,11 @@ public class PutFileClient {
 			int count;
 			// numero di file complessivamente nella cartella (Attenzione sempre alle
 			// sottodirectory)
-			int numFileDir = filesDirectory.length;
+			
 			System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
 
 			// se ho un file ed è vuoto non ha senso aprire socket
-			if (numFileDir == 1 && filesDirectory[0].length() == 0) {
+			if (numFileDir == 1 && (filesDirectory[0].length() == 0 || filesDirectory[0].isDirectory()) ) {
 				System.out.println("Directory " + args[0] + ": un solo file vuoto da scrivere, bye!");
 				System.exit(0);
 			} else { // aperutra della socket
