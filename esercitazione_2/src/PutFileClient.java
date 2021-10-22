@@ -10,14 +10,17 @@ public class PutFileClient {
 		InetAddress addr = null;
 		int port = -1;
 		File directory = null;
+		long limitDimFile = -1;
 
 		try { // check args
-			if (args.length == 3) {
+			if (args.length == 4) {	
+				 //controllo ip
 				addr = InetAddress.getByName(args[0]);
 				port = Integer.parseInt(args[1]);
 				directory = new File(args[2]);
+				limitDimFile = Long.parseLong(args[3]);
 			} else {
-				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath");
+				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath limitDimFile");
 				System.exit(1);
 			}
 		} // try
@@ -25,20 +28,28 @@ public class PutFileClient {
 		catch (Exception e) {
 			System.out.println("Problemi, i seguenti: ");
 			e.printStackTrace();
-			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath");
+			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath limitDimFile");
 			System.exit(2);
+		}
+
+		// controllare funzione altri 
+
+
+		// verifico porta corretta
+		if (port < 1024 || port > 65545) { //verificare limite superiore
+			System.out.println("Usage: port is smaller than 1024");
+			System.exit(7);
+		}
+
+		// verifico che il valore di soglia sia nagguire du 0
+		if (limitDimFile < 0) {
+			System.out.println("Usage: Limit dim byte file is negative");
+			System.exit(6);
 		}
 
 		// verifico che sia una directory
 		if (!directory.isDirectory()) {
 			System.out.println("Usage: Param directoryPath isn't directory");
-			System.exit(3);
-		}
-
-		// verifico che non sia vuota
-		System.out.println(directory.length());
-		if (directory.length() <= 64) { // DA verificare che 64 vada bene per tutti sisitemi
-			System.out.println("Usage: Param directoryPath is empty");
 			System.exit(3);
 		}
 
@@ -52,6 +63,12 @@ public class PutFileClient {
 		// directory)
 		File[] filesDirectory = directory.listFiles();
 
+		int numFileDir = -1;
+		if ((numFileDir = filesDirectory.length) == 0) {
+			System.out.println("Usage: Param directoryPath is empty");
+			System.exit(5);
+		}
+
 		// oggetti utilizzati dal client per la comunicazione e la lettura del file
 		// locale
 		Socket socket = null;
@@ -64,11 +81,11 @@ public class PutFileClient {
 			int count;
 			// numero di file complessivamente nella cartella (Attenzione sempre alle
 			// sottodirectory)
-			int numFileDir = filesDirectory.length;
+			
 			System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
 
 			// se ho un file ed è vuoto non ha senso aprire socket
-			if (numFileDir == 1 && filesDirectory[0].length() == 0) {
+			if (numFileDir == 1 && (filesDirectory[0].length() == 0 || filesDirectory[0].isDirectory()) ) {
 				System.out.println("Directory " + args[0] + ": un solo file vuoto da scrivere, bye!");
 				System.exit(0);
 			} else { // aperutra della socket
