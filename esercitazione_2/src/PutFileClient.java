@@ -112,7 +112,7 @@ public class PutFileClient {
 						/* Invio file richiesto e attesa esito dal server */
 						// creazione stream di input da file
 						try {
-							nomeFile = filesDirectory[count].getName();
+							nomeFile = filesDirectory[count].getPath();
 							inFile = new FileInputStream(nomeFile);
 						}
 						/*
