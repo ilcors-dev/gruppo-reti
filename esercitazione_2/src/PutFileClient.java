@@ -112,8 +112,8 @@ public class PutFileClient {
 						/* Invio file richiesto e attesa esito dal server */
 						// creazione stream di input da file
 						try {
-							nomeFile = filesDirectory[count].getPath();
-							inFile = new FileInputStream(nomeFile);
+							nomeFile = filesDirectory[count].getName();
+							inFile = new FileInputStream(filesDirectory[count].getPath());
 						}
 						/*
 						 * abbiamo gia' verificato che esiste, a meno di inconvenienti, es.
