@@ -37,13 +37,13 @@ public class PutFileClient {
 
 		// verifico porta corretta
 		if (port < 1024 || port > 65545) { // verificare limite superiore
-			System.out.println("Usage: port is smaller than 1024");
+			System.out.println("Usage: port is smaller than 1024 or bigger than 655..");
 			System.exit(7);
 		}
 
-		// verifico che il valore di soglia sia nagguire du 0
-		if (limitDimFile < 0) {
-			System.out.println("Usage: Limit dim byte file is negative");
+		// verifico che il valore di soglia sia nagguire di 0
+		if (limitDimFile <= 0) {
+			System.out.println("Usage: Limit dim byte file is negative or 0");
 			System.exit(6);
 		}
 
