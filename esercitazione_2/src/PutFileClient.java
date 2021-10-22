@@ -16,6 +16,11 @@ public class PutFileClient {
 		try { // check args
 			if (args.length == 4) {
 				// controllo ip
+				//DA METTERE: controllo che sia ip e non dominio
+				if (!args[0].matches("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}")) {
+					System.out.println("IP Server "+" - not well formatter.");
+					System.exit(1);
+				}
 				addr = InetAddress.getByName(args[0]);
 				port = Integer.parseInt(args[1]);
 				directory = new File(args[2]);
@@ -36,8 +41,8 @@ public class PutFileClient {
 		// controllare funzione altri
 
 		// verifico porta corretta
-		if (port < 1024 || port > 65545) { // verificare limite superiore
-			System.out.println("Usage: port is smaller than 1024 or bigger than 655..");
+		if (port < 1024 || port > 65535) { // verificare limite superiore
+			System.out.println("Usage: port is smaller than 1024 or bigger than 65535");
 			System.exit(7);
 		}
 
