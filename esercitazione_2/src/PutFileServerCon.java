@@ -22,14 +22,13 @@ class PutFileServerThread extends Thread {
 			try {
 				inSock = new DataInputStream(clientSocket.getInputStream());
 				outSock = new DataOutputStream(clientSocket.getOutputStream());
-			} catch (SocketTimeoutException te) {
-				System.err
-						.println("Non ho ricevuto nulla dal client per 30 sec., interrompo "
-								+ "la comunicazione e accetto nuove richieste.");
+			}
+			catch (SocketTimeoutException te) {
+				System.err.println("Non ho ricevuto nulla dal client per 30 sec., interrompo "+ "la comunicazione e accetto nuove richieste.");
 				return;
-			} catch (Exception e) {
-				System.err.println("Problemi nella accettazione della connessione: "
-						+ e.getMessage());
+			}
+			catch (Exception e) {
+				System.err.println("Problemi nella accettazione della connessione: "+ e.getMessage());
 				e.printStackTrace();
 				return;
 			}
@@ -48,7 +47,8 @@ class PutFileServerThread extends Thread {
 					ste.printStackTrace();
 					clientSocket.close();
 					continue;
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					System.out
 							.println("Problemi nella lettura dal Client del nome del file, termino connessione ");
 					clientSocket.close();
@@ -68,7 +68,8 @@ class PutFileServerThread extends Thread {
 
 					try {
 						outSock.writeUTF(esito);
-					} catch (SocketTimeoutException ste) {
+					}
+					catch (SocketTimeoutException ste) {
 						System.out.println("Timeout scattato: ");
 						ste.printStackTrace();
 						clientSocket.close();
@@ -86,7 +87,7 @@ class PutFileServerThread extends Thread {
 						long dimFile = -1;
 
 						try {
-							System.out.println("Ricevo il file " + nomeFile + ": \n");
+							System.out.println("Ricevo il file " + nomeFile + ":");
 							try {
 								dimFile = inSock.readLong();
 							}catch (IOException e) {
@@ -96,7 +97,7 @@ class PutFileServerThread extends Thread {
 							}
 
 							FileUtility.trasferisci_a_byte_file_binario(inSock, new DataOutputStream(outFile), dimFile);
-							System.out.println("\nRicezione del file " + nomeFile + " terminata\n");
+							System.out.println("Ricezione del file " + nomeFile + " terminata");
 							outFile.close();
 						}
 						catch (SocketTimeoutException ste) {
@@ -110,9 +111,7 @@ class PutFileServerThread extends Thread {
 							break;
 						}
 						catch (Exception e) {
-							System.err
-									.println("\nProblemi durante la ricezione e scrittura del file: "
-											+ e.getMessage());
+							System.err.println("Problemi durante la ricezione e scrittura del file: "+ e.getMessage());
 							e.printStackTrace();
 							clientSocket.close();
 							System.out.println("Terminata connessione con " + clientSocket);
@@ -146,16 +145,14 @@ public class PutFileServerCon {
 	    	} else if (args.length == 0) {
 	    		port = PORT;
 	    	} else {
-	    		System.out
-	    			.println("Usage: java PutFileServerThread or java PutFileServerThread port");
+	    		System.out.println("Usage: java PutFileServerThread or java PutFileServerThread port");
 	    		System.exit(1);
 	    	}
 	    }
 	    catch (Exception e) {
 	    	System.out.println("Problemi, i seguenti: ");
 	    	e.printStackTrace();
-	    	System.out
-	          	.println("Usage: java PutFileServerThread or java PutFileServerThread port");
+	    	System.out.println("Usage: java PutFileServerThread or java PutFileServerThread port");
 	    	System.exit(1);
 	    }
 
@@ -170,14 +167,12 @@ public class PutFileServerCon {
 	    }
 	    catch (Exception e) {
 	    	System.err
-	    		.println("Server: problemi nella creazione della server socket: "
-	    				+ e.getMessage());
+	    		.println("Server: problemi nella creazione della server socket: "+ e.getMessage());
 	    	e.printStackTrace();
 	    	System.exit(1);
 	    }
 
 	    try {
-
 	    	while (true) {
 	    		System.out.println("Server: in attesa di richieste...\n");
 
@@ -187,9 +182,7 @@ public class PutFileServerCon {
 	    			System.out.println("Server: connessione accettata: " + clientSocket);
 	    		}
 	    		catch (Exception e) {
-	    			System.err
-	    				.println("Server: problemi nella accettazione della connessione: "
-	    						+ e.getMessage());
+	    			System.err.println("Server: problemi nella accettazione della connessione: "+ e.getMessage());
 	    			e.printStackTrace();
 	    			continue;
 	    		}
@@ -198,10 +191,8 @@ public class PutFileServerCon {
 	    			new PutFileServerThread(clientSocket).start();
 	    		}
 	    		catch (Exception e) {
-	    			System.err.println("Server: problemi nel server thread: "
-	    					+ e.getMessage());
+	    			System.err.println("Server: problemi nel server thread: "+ e.getMessage());
 	    			e.printStackTrace();
-	    			continue;
 	    		}
 	    	}
 	    }
@@ -211,6 +202,5 @@ public class PutFileServerCon {
 	    	System.out.println("PutFileServerCon: termino...");
 	    	System.exit(2);
 	    }
-	    
 	}
 }

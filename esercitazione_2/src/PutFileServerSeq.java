@@ -125,7 +125,7 @@ public class PutFileServerSeq {
 							long dimFile = -1;
 
 							try {
-								System.out.println("Ricevo il file " + nomeFile + ": \n");
+								System.out.println("Ricevo il file " + nomeFile + ":");
 								try {
 									dimFile = inSock.readLong();
 								}catch (IOException e) {
@@ -135,7 +135,7 @@ public class PutFileServerSeq {
 								}
 
 								FileUtility.trasferisci_a_byte_file_binario(inSock, new DataOutputStream(outFile), dimFile);
-								System.out.println("\nRicezione del file " + nomeFile + " terminata\n");
+								System.out.println("Ricezione del file " + nomeFile + " terminata");
 								outFile.close();
 							}
 							catch (SocketTimeoutException ste) {
@@ -149,9 +149,7 @@ public class PutFileServerSeq {
 								break;
 							}
 							catch (Exception e) {
-								System.err
-										.println("\nProblemi durante la ricezione e scrittura del file: "
-												+ e.getMessage());
+								System.err.println("Problemi durante la ricezione e scrittura del file: "+ e.getMessage());
 								e.printStackTrace();
 								clientSocket.close();
 								System.out.println("Terminata connessione con " + clientSocket);
