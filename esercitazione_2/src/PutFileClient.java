@@ -156,7 +156,7 @@ public class PutFileClient {
 
 					} else {
 						System.out
-								.println(filesDirectory[count].getName() + " presente nel non soddisfa i requisiti dimensionali");
+								.println(filesDirectory[count].getName() + " presente nel direttorio non soddisfa i requisiti dimensionali");
 						System.out.println("Procedo con prossimo file ...");
 					}
 				}
