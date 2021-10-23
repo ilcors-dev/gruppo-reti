@@ -1,11 +1,9 @@
-package src;// PutFileServer Concorrente
+package src;
 
 import java.io.*;
 import java.net.*;
 
-// Thread lanciato per ogni richiesta accettata
-// versione per il trasferimento di file binari
-class PutFileServerThread extends Thread{
+class PutFileServerThread extends Thread {
 
 	private Socket clientSocket = null;
 
@@ -23,7 +21,6 @@ class PutFileServerThread extends Thread{
 		try {
 			String nomeFile;
 			try {
-				// creazione stream di input e out da socket
 				inSock = new DataInputStream(clientSocket.getInputStream());
 				outSock = new DataOutputStream(clientSocket.getOutputStream());
 				nomeFile = inSock.readUTF();
@@ -32,8 +29,7 @@ class PutFileServerThread extends Thread{
 				System.out.println("Timeout scattato: ");
 				ste.printStackTrace();
 				clientSocket.close();
-				System.out
-					.print("\n^D(Unix)/^Z(Win)+invio per uscire, solo invio per continuare: ");
+				System.out.print("\n^D(Unix)/^Z(Win)+invio per uscire, solo invio per continuare: ");
 				return;          
 			}        
 			catch (IOException ioe) {
@@ -41,7 +37,6 @@ class PutFileServerThread extends Thread{
 					.println("Problemi nella creazione degli stream di input/output "
 							+ "su socket: ");
 				ioe.printStackTrace();
-				// il server continua l'esecuzione riprendendo dall'inizio del ciclo
 				return;
 			}
 			catch (Exception e) {
@@ -54,7 +49,6 @@ class PutFileServerThread extends Thread{
 			
 			FileOutputStream outFile = null;
 			String esito;
-			// file check
 			if (nomeFile == null) {
 				System.out.println("Problemi nella ricezione del nome del file: ");
 				clientSocket.close();
@@ -64,7 +58,6 @@ class PutFileServerThread extends Thread{
 				if (curFile.exists()) {
 					try {
 						esito = "Sovrascritto file esistente";
-						// distruggo il file da sovrascrivere
 						curFile.delete();
 					}
 					catch (Exception e) {
@@ -75,8 +68,7 @@ class PutFileServerThread extends Thread{
 				} else esito = "Creato nuovo file";
 				outFile = new FileOutputStream(nomeFile);
 			}
-			
-			//ciclo di ricezione dal client, salvataggio file e stamapa a video
+
 			try {
 				System.out.println("Ricevo il file " + nomeFile + ": \n");
 				FileUtility.trasferisci_a_byte_file_binario(inSock,
@@ -84,10 +76,10 @@ class PutFileServerThread extends Thread{
 				System.out.println("\nRicezione del file " + nomeFile + " terminata\n");
 				// chiusura file
 				outFile.close();
-				clientSocket.shutdownInput(); //chiusura socket (downstream)
+				clientSocket.shutdownInput();
 				outSock.writeUTF(esito + ", file salvato lato server");
 				outSock.flush();
-				clientSocket.shutdownOutput(); //chiusura socket (dupstream)
+				clientSocket.shutdownOutput();
 				System.out.println("\nTerminata connessione con " + clientSocket);
 				clientSocket.close();
 			}
@@ -109,26 +101,22 @@ class PutFileServerThread extends Thread{
 				return;
 			}
 		}
-	    // qui catturo le eccezioni non catturate all'interno del while
-	    // in seguito alle quali il server termina l'esecuzione
 	    catch (Exception e) {
 	    	e.printStackTrace();
 	    	System.out
 	          .println("Errore irreversibile, PutFileServerThread: termino...");
 	    	System.exit(3);
 	    }
-	} // run
-
-} // PutFileServerThread class
+	}
+}
 
 public class PutFileServerCon {
-	public static final int PORT = 1050; //default port
+	public static final int PORT = 54321;
 
 	public static void main(String[] args) throws IOException {
 
 		int port = -1;
 
-		/* controllo argomenti */
 	    try {
 	    	if (args.length == 1) {
 	    		port = Integer.parseInt(args[0]);
@@ -143,7 +131,7 @@ public class PutFileServerCon {
 	    			.println("Usage: java PutFileServerThread or java PutFileServerThread port");
 	    		System.exit(1);
 	    	}
-	    } //try
+	    }
 	    catch (Exception e) {
 	    	System.out.println("Problemi, i seguenti: ");
 	    	e.printStackTrace();
@@ -175,7 +163,6 @@ public class PutFileServerCon {
 	    		System.out.println("Server: in attesa di richieste...\n");
 
 	    		try {
-	    			// bloccante fino ad una pervenuta connessione
 	    			clientSocket = serverSocket.accept();
 	    			clientSocket.setSoTimeout(30000);
 	    			System.out.println("Server: connessione accettata: " + clientSocket);
@@ -188,7 +175,6 @@ public class PutFileServerCon {
 	    			continue;
 	    		}
 
-	    		// serizio delegato ad un nuovo thread
 	    		try {
 	    			new PutFileServerThread(clientSocket).start();
 	    		}
@@ -199,16 +185,14 @@ public class PutFileServerCon {
 	    			continue;
 	    		}
 
-	    	} // while
+	    	}
 	    }
-	    // qui catturo le eccezioni non catturate all'interno del while
-	    // in seguito alle quali il server termina l'esecuzione
 	    catch (Exception e) {
 	    	e.printStackTrace();
-	    	// chiusura di stream e socket
+	    	serverSocket.close();
 	    	System.out.println("PutFileServerCon: termino...");
 	    	System.exit(2);
 	    }
 	    
 	}
-} // PutFileServerCon class
+}
