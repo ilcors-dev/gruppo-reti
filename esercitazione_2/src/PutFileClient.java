@@ -70,6 +70,7 @@ public class PutFileClient {
 		DataInputStream inSock = null;
 		DataOutputStream outSock = null;
 		String nomeFile = null;
+		String nomeDir = null;
 
 		try {
 			int count , nFDEff = 0;
@@ -103,6 +104,10 @@ public class PutFileClient {
 				System.out.println("Problemi nella creazione degli stream su socket: ");
 				e.printStackTrace();
 			}
+
+//			nomeDir = directory.getName();
+//			outSock.writeUTF(nomeDir);
+//			System.out.println("Inviato il nome della cartella " + nomeDir);
 
 			for (count = 0; count < nFDEff; count++) {
 

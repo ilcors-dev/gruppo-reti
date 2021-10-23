@@ -73,9 +73,14 @@ public class PutFileServerSeq {
 					continue;
 				}
 
+//				String nomeDir = inSock.readUTF();
+//				new File(nomeDir).mkdirs();
+//				System.out.println("Ricevuta la cartella "+nomeDir);
+
 				while (!clientSocket.isClosed()) {
 					String nomeFile;
 					try {
+//						nomeFile = nomeDir+"/"+inSock.readUTF();
 						nomeFile = inSock.readUTF();
 					} catch (SocketTimeoutException ste) {
 						System.out.println("Timeout scattato: ");
