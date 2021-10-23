@@ -20,8 +20,7 @@ public class PutFileServerSeq {
 			} else if (args.length == 0) {
 				port = PORT;
 			} else {
-				System.out
-					.println("Usage: java PutFileServerSeq or java PutFileServerSeq port");
+				System.out.println("Usage: java PutFileServerSeq or java PutFileServerSeq port");
 				System.exit(1);
 			}
 		}
@@ -51,6 +50,7 @@ public class PutFileServerSeq {
 			Socket clientSocket = null;
 			DataInputStream inSock = null;
 			DataOutputStream outSock = null;
+
 			while(true) {
 				System.out.println("\nIn attesa di richieste...");
 				try {
@@ -61,101 +61,98 @@ public class PutFileServerSeq {
 
 					inSock = new DataInputStream(clientSocket.getInputStream());
 					outSock = new DataOutputStream(clientSocket.getOutputStream());
-				} catch (SocketTimeoutException te) {
-					System.err
-							.println("Non ho ricevuto nulla dal client per 30 sec., interrompo "
-									+ "la comunicazione e accetto nuove richieste.");
+				}
+				catch (SocketTimeoutException te) {
+					System.err.println("Non ho ricevuto nulla dal client per 30 sec., interrompo "+ "la comunicazione e accetto nuove richieste.");
 					continue;
-				} catch (Exception e) {
-					System.err.println("Problemi nella accettazione della connessione: "
-							+ e.getMessage());
+				}
+				catch (Exception e) {
+					System.err.println("Problemi nella accettazione della connessione: "+ e.getMessage());
 					e.printStackTrace();
 					continue;
 				}
 
-//				String nomeDir = inSock.readUTF();
-//				new File(nomeDir).mkdirs();
-//				System.out.println("Ricevuta la cartella "+nomeDir);
+/*//				Ricezione della Directory
+				String nomeDir = inSock.readUTF();
+				new File(nomeDir).mkdirs();
+				System.out.println("Ricevuta la cartella "+nomeDir);*/
 
 				while (!clientSocket.isClosed()) {
 					String nomeFile;
 					try {
 //						nomeFile = nomeDir+"/"+inSock.readUTF();
 						nomeFile = inSock.readUTF();
-					} catch (SocketTimeoutException ste) {
+
+						if (nomeFile == null) {
+							System.out.println("Problemi nella ricezione del nome del file: ");
+							break;
+						}
+					}
+					catch (SocketTimeoutException ste) {
 						System.out.println("Timeout scattato: ");
 						ste.printStackTrace();
 						clientSocket.close();
-						continue;
-					} catch (IOException e) {
-						System.out
-								.println("Problemi nella lettura dal Client del nome del file, termino connessione ");
+						break;
+					}
+					catch (IOException e) {
+						System.out.println("Problemi nella lettura dal Client del nome del file, termino connessione ");
 						clientSocket.close();
 						break;
 					}
 
 					FileOutputStream outFile = null;
-					String esito = "attiva";
-					if (nomeFile == null) {
-						System.out.println("Problemi nella ricezione del nome del file: ");
+					String esito = null;
+					long dimFile = -1;
+
+					File curFile = new File(nomeFile);
+					esito = curFile.exists() ? "salta" : "attiva";
+
+					try {
+						outSock.writeUTF(esito);
 					}
-					else {
-						File curFile = new File(nomeFile);
-						if (curFile.exists()) {
-							esito = "salta";
-						}
+					catch (IOException e) {
+						System.out.println("Problemi nell' invio al Client dell' esito, termino la connessione ");
+						clientSocket.close();
+						break;
+					}
+
+					if(esito.equals("attiva")) {
+						outFile = new FileOutputStream(nomeFile);
 
 						try {
-							outSock.writeUTF(esito);
-						} catch (SocketTimeoutException ste) {
-							System.out.println("Timeout scattato: ");
-							ste.printStackTrace();
-							clientSocket.close();
-							continue;
-						}
-						catch (IOException e) {
-							System.out.println("Problemi nell' invio al Client dell' esito, termino la connessione ");
-							clientSocket.close();
-							break;
-						}
-
-						if(esito.equals("attiva")) {
-							outFile = new FileOutputStream(nomeFile);
-
-							long dimFile = -1;
-
 							try {
-								System.out.println("Ricevo il file " + nomeFile + ":");
-								try {
-									dimFile = inSock.readLong();
-								}catch (IOException e) {
-									System.out.println("Problemi nella ricezione della lunghezza del file, termino la connessione ");
-									clientSocket.close();
-									break;
-								}
-
-								FileUtility.trasferisci_a_byte_file_binario(inSock, new DataOutputStream(outFile), dimFile);
-								System.out.println("Ricezione del file " + nomeFile + " terminata");
-								outFile.close();
+								dimFile = inSock.readLong();
+								System.out.println("dimensione di " + nomeFile + ": "+dimFile);
 							}
 							catch (SocketTimeoutException ste) {
 								System.out.println("Timeout scattato: ");
 								ste.printStackTrace();
 								clientSocket.close();
+								break;
 							}
 							catch (IOException e) {
-								System.out.println("Problemi nella ricezione del contenuto del file, termino la connessione ");
+								System.out.println("Problemi nella ricezione della lunghezza del file, termino la connessione ");
 								clientSocket.close();
 								break;
 							}
-							catch (Exception e) {
-								System.err.println("Problemi durante la ricezione e scrittura del file: "+ e.getMessage());
-								e.printStackTrace();
-								clientSocket.close();
-								System.out.println("Terminata connessione con " + clientSocket);
-							}
+
+							System.out.println("Ricevo il file " + nomeFile + ":");
+							FileUtility.trasferisci_a_byte_file_binario(inSock, new DataOutputStream(outFile), dimFile);
+							System.out.println("Ricezione del file " + nomeFile + " terminata");
+							outFile.close();
+						}
+						catch (SocketTimeoutException ste) {
+							System.out.println("Timeout scattato: ");
+							ste.printStackTrace();
+							clientSocket.close();
+						}
+						catch (Exception e) {
+							System.err.println("Problemi durante la ricezione e scrittura del file, termino la connessione ");
+							e.printStackTrace();
+							clientSocket.close();
 						}
 					}
+
 				}
 			}
 		}
