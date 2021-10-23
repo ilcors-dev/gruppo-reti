@@ -7,6 +7,7 @@ public class PutFileClient {
 
 	public static void main(String[] args) {
 
+		long startTime = System.nanoTime();
 		InetAddress addr = null;
 		int port = -1;
 		File directory = null;
@@ -76,8 +77,8 @@ public class PutFileClient {
 			boolean stateCheck;
 
 			for (count = 0; count < numFileDir; count++){
-				stateCheck = filesDirectory[count].length() >= limitDimFile
-							 && filesDirectory[count].isFile();
+				stateCheck = filesDirectory[count].isFile()
+							&& filesDirectory[count].length() >= limitDimFile;
 				if(stateCheck){
 					if(nFDEff != count) {
 						filesDirectory[nFDEff] = filesDirectory[count];
@@ -171,5 +172,11 @@ public class PutFileClient {
 			System.err.println("Chiudo!");
 			System.exit(3);
 		}
+
+		long endTime = System.nanoTime();
+		long timeElapsed = endTime - startTime;
+
+		System.out.println("Execution time in nanoseconds: " + timeElapsed);
+		System.out.println("Execution time in milliseconds: " + timeElapsed / 1000000);
 	}
 }
