@@ -1,0 +1,77 @@
+riferimenti benchmark:
+
+cpu: i7 7700k - ram 32gb ddr4 3200mhz
+
+6 file da:
+- 35kb
+- 70kb
+- 139kb
+- 278kb
+- 417kb
+- 833kb
+
+-------- SERVER SEQUENZIALE --------
+
+FILE NUOVI NON PRESENTI SUL SERVER
+19781ms
+19494ms
+19700ms
+20057ms
+20411ms
+FILE GIA' PRESENTI SUL SERVER
+4ms
+3ms
+3ms
+2ms
+3ms
+
+-------- SERVER PARALLELO --------
+(considera il tempo maggiore)
+
+1run
+746ms
+1502ms
+2166ms
+3056ms
+3899ms
+7969ms
+
+2run
+859ms
+1626ms
+2340ms
+3132ms
+3791ms
+9032ms
+
+3run
+777ms
+1725ms
+1902ms
+3017ms
+3891ms
+8475ms
+
+3run
+704ms
+1617ms
+2217ms
+2760ms
+3162ms
+8500ms
+
+4run
+547ms
+1686ms
+2262ms
+2994ms
+3876ms
+9078ms
+
+5run
+451ms
+1579ms
+2324ms
+2894ms
+3547ms
+8588ms

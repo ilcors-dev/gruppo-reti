@@ -41,9 +41,10 @@ class PutFileServerThread extends Thread {
 			System.out.println("Ricevuta la cartella "+nomeDir);*/
 			String esito = null;
 			String nomeDir = null;
-
+			long reference = 0;
 			try {
 				nomeDir = inSock.readUTF();
+				reference = System.nanoTime();
 				File dir = new File(nomeDir);
 				synchronized (dir.getCanonicalPath().intern()) {
 					esito = dir.exists() ? "saltaDir" : "attivaDir";
@@ -148,6 +149,11 @@ class PutFileServerThread extends Thread {
 				}
 
 			}
+			long finish = System.nanoTime();
+			long time = (finish - reference) / 1000000;
+			BufferedWriter out = new BufferedWriter(new FileWriter("./benchmarks.txt", true));
+			out.write(String.valueOf(time) + "ms" + System.lineSeparator());
+			out.flush();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
