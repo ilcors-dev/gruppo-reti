@@ -5,6 +5,8 @@ import java.net.*;
 
 public class PutFileClient {
 
+	private static final String IPV4_PATTERN =
+            "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
 	public static void main(String[] args) {
 
 		long startTime = System.nanoTime();
@@ -15,7 +17,7 @@ public class PutFileClient {
 
 		try {
 			if (args.length == 4) {
-				if (!args[0].matches("\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}")) {
+				if (args[0].matches("[0-9]+") && !args[0].matches(IPV4_PATTERN)) {
 					System.out.println("IP Server "+" - not well formatter.");
 					System.exit(1);
 				}
@@ -24,14 +26,14 @@ public class PutFileClient {
 				directory = new File(args[2]);
 				limitDimFile = Long.parseLong(args[3]);
 			} else {
-				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath limitDimFile");
+				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath minDimFile");
 				System.exit(1);
 			}
 		}
 		catch (Exception e) {
 			System.out.println("Problemi, i seguenti: ");
 			e.printStackTrace();
-			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath limitDimFile");
+			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath minDimFile");
 			System.exit(2);
 		}
 
@@ -77,6 +79,7 @@ public class PutFileClient {
 			long dimFile;
 			boolean stateCheck;
 
+			//non conviene fare direttamente nel prox ciclo?
 			for (count = 0; count < numFileDir; count++){
 				stateCheck = filesDirectory[count].isFile()
 							&& filesDirectory[count].length() >= limitDimFile;
