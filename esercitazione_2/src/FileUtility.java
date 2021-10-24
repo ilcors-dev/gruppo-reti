@@ -4,8 +4,8 @@ import java.io.*;
 
 public class FileUtility {
 
-	static protected void trasferisci_a_byte_file_binario(DataInputStream src,
-			DataOutputStream dest, long dimFile) throws IOException {
+	public static void trasferisci_a_byte_file_binario(DataInputStream src,
+													   DataOutputStream dest, long dimFile) throws IOException {
 
 	    int buffer;
 	    try {
