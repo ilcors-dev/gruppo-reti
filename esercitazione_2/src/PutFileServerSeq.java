@@ -72,16 +72,45 @@ public class PutFileServerSeq {
 					continue;
 				}
 
-/*//				Ricezione della Directory
-				String nomeDir = inSock.readUTF();
-				new File(nomeDir).mkdirs();
-				System.out.println("Ricevuta la cartella "+nomeDir);*/
+				String esito = null;
+				String nomeDir = null;
+
+				try {
+					nomeDir = inSock.readUTF();
+					File dir = new File(nomeDir);
+					esito = dir.exists() ? "saltaDir" : "attivaDir";
+
+					if(esito.equals("attivaDir")) {
+						dir.mkdirs();
+						System.out.println("Ricevuta la cartella "+nomeDir);
+					}
+				}
+				catch (SocketTimeoutException ste) {
+					System.out.println("Timeout scattato: ");
+					ste.printStackTrace();
+					clientSocket.close();
+					continue;
+				}
+				catch (IOException e) {
+					System.out.println("Problemi nella lettura dal Client del nome del direttorio, termino connessione ");
+					clientSocket.close();
+					continue;
+				}
+
+				try {
+					outSock.writeUTF(esito);
+				}
+				catch (IOException e) {
+					System.out.println("Problemi nell' invio al Client dell' esito, termino la connessione ");
+					clientSocket.close();
+					break;
+				}
 
 				while (!clientSocket.isClosed()) {
 					String nomeFile;
 					try {
-//						nomeFile = nomeDir+"/"+inSock.readUTF();
-						nomeFile = inSock.readUTF();
+						nomeFile = nomeDir+"/"+inSock.readUTF();
+//						nomeFile = inSock.readUTF();
 
 						if (nomeFile == null) {
 							System.out.println("Problemi nella ricezione del nome del file: ");
@@ -95,13 +124,12 @@ public class PutFileServerSeq {
 						break;
 					}
 					catch (IOException e) {
-						System.out.println("Problemi nella lettura dal Client del nome del file, termino connessione ");
+						System.out.println("Il Cliente ha terminato la connessione, chiudo il canale");
 						clientSocket.close();
 						break;
 					}
 
 					FileOutputStream outFile = null;
-					String esito = null;
 					long dimFile = -1;
 
 					File curFile = new File(nomeFile);

@@ -39,12 +39,47 @@ class PutFileServerThread extends Thread {
 			String nomeDir = inSock.readUTF();
 			new File(nomeDir).mkdirs();
 			System.out.println("Ricevuta la cartella "+nomeDir);*/
+			String esito = null;
+			String nomeDir = null;
+
+			try {
+				nomeDir = inSock.readUTF();
+				File dir = new File(nomeDir);
+				synchronized (dir.getCanonicalPath().intern()) {
+					esito = dir.exists() ? "saltaDir" : "attivaDir";
+
+					if (esito.equals("attivaDir")) {
+						dir.mkdirs();
+						System.out.println("Ricevuta la cartella " + nomeDir);
+					}
+				}
+			}
+			catch (SocketTimeoutException ste) {
+				System.out.println("Timeout scattato: ");
+				ste.printStackTrace();
+				clientSocket.close();
+				return;
+			}
+			catch (IOException e) {
+				System.out.println("Problemi nella lettura dal Client del nome del direttorio, termino connessione ");
+				clientSocket.close();
+				return;
+			}
+
+			try {
+				outSock.writeUTF(esito);
+			}
+			catch (IOException e) {
+				System.out.println("Problemi nell' invio al Client dell' esito, termino la connessione ");
+				clientSocket.close();
+				System.exit(4);
+			}
 
 			while (!clientSocket.isClosed()) {
 				String nomeFile;
 				try {
-					//nomeFile = nomeDir+"/"+inSock.readUTF();
-					nomeFile = inSock.readUTF();
+					nomeFile = nomeDir+"/"+inSock.readUTF();
+					//nomeFile = inSock.readUTF();
 					if (nomeFile == null) {
 						System.out.println("Problemi nella ricezione del nome del file: ");
 						break;
@@ -62,7 +97,6 @@ class PutFileServerThread extends Thread {
 				}
 
 				FileOutputStream outFile = null;
-				String esito = null;
 				long dimFile = -1;
 
 				File curFile = new File(nomeFile);
