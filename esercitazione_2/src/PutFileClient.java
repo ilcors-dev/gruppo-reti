@@ -27,34 +27,34 @@ public class PutFileClient {
 				limitDimFile = Long.parseLong(args[3]);
 			} else {
 				System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath minDimFile");
-				System.exit(1);
+				System.exit(2);
 			}
 		}
 		catch (Exception e) {
 			System.out.println("Problemi, i seguenti: ");
 			e.printStackTrace();
 			System.out.println("Usage: java PutFileClient serverAddr serverPort directoryPath minDimFile");
-			System.exit(2);
+			System.exit(3);
 		}
 
 		if (port < 1024 || port > 65535) {
 			System.out.println("Usage: port is smaller than 1024 or bigger than 65535");
-			System.exit(7);
+			System.exit(4);
 		}
 
 		if (limitDimFile <= 0) {
 			System.out.println("Usage: Limit dim byte file is negative or 0");
-			System.exit(6);
+			System.exit(5);
 		}
 
 		if (!directory.isDirectory()) {
 			System.out.println("Usage: Param directoryPath isn't directory");
-			System.exit(3);
+			System.exit(6);
 		}
 
 		if (!directory.canRead()) {
 			System.out.println("Usage: Can't read in directoryPath");
-			System.exit(4);
+			System.exit(7);
 		}
 
 		Socket socket = null;
@@ -72,7 +72,7 @@ public class PutFileClient {
 
 			if ((numFileDir = filesDirectory.length) == 0) {
 				System.out.println("Usage: Param directoryPath is empty");
-				System.exit(5);
+				System.exit(8);
 			}
 
 			System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
@@ -192,7 +192,7 @@ public class PutFileClient {
 			System.err.println("Errore irreversibile, il seguente: ");
 			e.printStackTrace();
 			System.err.println("Chiudo!");
-			System.exit(3);
+			System.exit(9);
 		}
 
 		long endTime = System.nanoTime();
