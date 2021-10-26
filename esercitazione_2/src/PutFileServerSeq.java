@@ -71,6 +71,7 @@ public class PutFileServerSeq {
                 String esito = null;
                 String nomeDir = null;
                 long reference = 0;
+
                 try {
                     nomeDir = inSock.readUTF();
                     reference = System.nanoTime();
@@ -86,7 +87,8 @@ public class PutFileServerSeq {
                     ste.printStackTrace();
                     clientSocket.close();
                     continue;
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     System.out.println("Problemi nella lettura dal Client del nome del direttorio, termino connessione ");
                     clientSocket.close();
                     continue;
@@ -102,29 +104,31 @@ public class PutFileServerSeq {
 
                 while (!clientSocket.isClosed()) {
                     String nomeFile;
+                    FileOutputStream outFile = null;
+                    File curFile = null;
+                    long dimFile = -1;
+
                     try {
                         nomeFile = nomeDir + "/" + inSock.readUTF();
-//						nomeFile = inSock.readUTF();
 
                         if (nomeFile == null) {
                             System.out.println("Problemi nella ricezione del nome del file: ");
                             break;
                         }
-                    } catch (SocketTimeoutException ste) {
+                    }
+                    catch (SocketTimeoutException ste) {
                         System.out.println("Timeout scattato: ");
                         ste.printStackTrace();
                         clientSocket.close();
                         break;
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                         System.out.println("Il Cliente ha terminato la connessione, chiudo il canale");
                         clientSocket.close();
                         break;
                     }
 
-                    FileOutputStream outFile = null;
-                    long dimFile = -1;
-
-                    File curFile = new File(nomeFile);
+                    curFile = new File(nomeFile);
                     esito = curFile.exists() ? "salta" : "attiva";
 
                     try {
@@ -147,7 +151,8 @@ public class PutFileServerSeq {
                                 ste.printStackTrace();
                                 clientSocket.close();
                                 break;
-                            } catch (IOException e) {
+                            }
+                            catch (IOException e) {
                                 System.out.println("Problemi nella ricezione della lunghezza del file, termino la connessione ");
                                 clientSocket.close();
                                 break;
@@ -161,7 +166,8 @@ public class PutFileServerSeq {
                             System.out.println("Timeout scattato: ");
                             ste.printStackTrace();
                             clientSocket.close();
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e) {
                             System.err.println("Problemi durante la ricezione e scrittura del file, termino la connessione ");
                             e.printStackTrace();
                             clientSocket.close();

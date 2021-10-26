@@ -57,36 +57,31 @@ public class PutFileClient {
 			System.exit(4);
 		}
 
-		File[] filesDirectory = directory.listFiles();
-		int numFileDir;
-
-		if ((numFileDir = filesDirectory.length) == 0) {
-			System.out.println("Usage: Param directoryPath is empty");
-			System.exit(5);
-		}
-
-		System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
-
 		Socket socket = null;
 		FileInputStream inFile = null;
 		DataInputStream inSock = null;
 		DataOutputStream outSock = null;
 		String nomeFile = null;
 		String nomeDir = null;
+		int count , nFDEff = 0, numFileDir;
+		long dimFile;
+		boolean stateCheck;
 
 		try {
-			int count , nFDEff = 0;
-			long dimFile;
-			boolean stateCheck;
+			File[] filesDirectory = directory.listFiles();
 
-			//non conviene fare direttamente nel prox ciclo?
+			if ((numFileDir = filesDirectory.length) == 0) {
+				System.out.println("Usage: Param directoryPath is empty");
+				System.exit(5);
+			}
+
+			System.out.println("Directory " + args[2] + ": file da trasferire " + numFileDir);
+
 			for (count = 0; count < numFileDir; count++){
 				stateCheck = filesDirectory[count].isFile()
-							&& filesDirectory[count].length() >= limitDimFile;
+							 && filesDirectory[count].length() >= limitDimFile;
 				if(stateCheck){
-					if(nFDEff != count) {
-						filesDirectory[nFDEff] = filesDirectory[count];
-					}
+					if(nFDEff != count) filesDirectory[nFDEff] = filesDirectory[count];
 					nFDEff++;
 				}
 			}
@@ -134,57 +129,59 @@ public class PutFileClient {
 			else {
 				for (count = 0; count < nFDEff; count++) {
 
-					dimFile = filesDirectory[count].length();
-
-					try {
+						dimFile = filesDirectory[count].length();
 						nomeFile = filesDirectory[count].getName();
-						inFile = new FileInputStream(filesDirectory[count]);
-					} catch (FileNotFoundException e) {
-						System.out.println("Problemi nella creazione dello stream di input da " + nomeFile + ": ");
-						e.printStackTrace();
-						continue;
-					}
 
-					try {
-						outSock.writeUTF(nomeFile);
-						System.out.println("Inviato il nome del file " + nomeFile);
-					} catch (Exception e) {
-						System.out.println("Problemi nell'invio del nome di " + nomeFile + ": ");
-						e.printStackTrace();
-						continue;
-					}
-
-					try {
-						esito = inSock.readUTF();
-						System.out.println("Esito trasmissione nome file: " + esito);
-						if (esito.equalsIgnoreCase("salta")) {
-							System.out.println("File " + nomeFile + " già presente sul server!");
-						} else if (esito.equalsIgnoreCase("attiva")) {
-							try {
-								outSock.writeLong(dimFile);
-								FileUtility.trasferisci_a_byte_file_binario(new DataInputStream(inFile), outSock, dimFile);
-								inFile.close();
-								System.out.println("Trasmissione di " + nomeFile + " terminata ");
-							} catch (SocketTimeoutException ste) {
-								System.out.println("Timeout scattato: ");
-								ste.printStackTrace();
-								socket.close();
-							} catch (Exception e) {
-								System.out.println("Problemi nell'invio di " + nomeFile + ": ");
-								e.printStackTrace();
-								socket.close();
-							}
+						try {
+							inFile = new FileInputStream(filesDirectory[count]);
+						} catch (FileNotFoundException e) {
+							System.out.println("Problemi nella creazione dello stream di input da " + nomeFile + ": ");
+							e.printStackTrace();
+							continue;
 						}
-					} catch (SocketTimeoutException ste) {
-						System.out.println("Timeout scattato: ");
-						ste.printStackTrace();
-						socket.close();
-					} catch (Exception e) {
-						System.out.println("Problemi nella ricezione dell'esito, i seguenti: ");
-						e.printStackTrace();
-						socket.close();
+
+						try {
+							outSock.writeUTF(nomeFile);
+							System.out.println("Inviato il nome del file " + nomeFile);
+						} catch (Exception e) {
+							System.out.println("Problemi nell'invio del nome di " + nomeFile + ": ");
+							e.printStackTrace();
+							continue;
+						}
+
+						try {
+							esito = inSock.readUTF();
+							System.out.println("Esito trasmissione nome file: " + esito);
+							if (esito.equalsIgnoreCase("salta")) {
+								System.out.println("File " + nomeFile + " già presente sul server!");
+							} else if (esito.equalsIgnoreCase("attiva")) {
+								try {
+									outSock.writeLong(dimFile);
+									FileUtility.trasferisci_a_byte_file_binario(new DataInputStream(inFile),
+											outSock,
+											dimFile);
+									inFile.close();
+									System.out.println("Trasmissione di " + nomeFile + " terminata ");
+								} catch (SocketTimeoutException ste) {
+									System.out.println("Timeout scattato: ");
+									ste.printStackTrace();
+									socket.close();
+								} catch (Exception e) {
+									System.out.println("Problemi nell'invio di " + nomeFile + ": ");
+									e.printStackTrace();
+									socket.close();
+								}
+							}
+						} catch (SocketTimeoutException ste) {
+							System.out.println("Timeout scattato: ");
+							ste.printStackTrace();
+							socket.close();
+						} catch (Exception e) {
+							System.out.println("Problemi nella ricezione dell'esito, i seguenti: ");
+							e.printStackTrace();
+							socket.close();
+						}
 					}
-				}
 			}
 			socket.shutdownInput();
 			socket.shutdownOutput();

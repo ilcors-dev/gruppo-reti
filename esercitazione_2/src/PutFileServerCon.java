@@ -35,10 +35,6 @@ class PutFileServerThread extends Thread {
 				return;
 			}
 
-/*//			Ricezione della Directory
-			String nomeDir = inSock.readUTF();
-			new File(nomeDir).mkdirs();
-			System.out.println("Ricevuta la cartella "+nomeDir);*/
 			String esito = null;
 			String nomeDir = null;
 			long reference = 0;
@@ -54,8 +50,7 @@ class PutFileServerThread extends Thread {
 						System.out.println("Ricevuta la cartella " + nomeDir);
 					}
 				}
-			}
-			catch (SocketTimeoutException ste) {
+			} catch (SocketTimeoutException ste) {
 				System.out.println("Timeout scattato: ");
 				ste.printStackTrace();
 				clientSocket.close();
@@ -78,15 +73,17 @@ class PutFileServerThread extends Thread {
 
 			while (!clientSocket.isClosed()) {
 				String nomeFile;
+				FileOutputStream outFile = null;
+				long dimFile = -1;
+				File curFile = null;
+
 				try {
 					nomeFile = nomeDir+"/"+inSock.readUTF();
-					//nomeFile = inSock.readUTF();
 					if (nomeFile == null) {
 						System.out.println("Problemi nella ricezione del nome del file: ");
 						break;
 					}
-				}
-				catch (SocketTimeoutException ste) {
+				} catch (SocketTimeoutException ste) {
 					System.out.println("Timeout scattato: ");
 					ste.printStackTrace();
 					clientSocket.close();
@@ -97,10 +94,7 @@ class PutFileServerThread extends Thread {
 					break;
 				}
 
-				FileOutputStream outFile = null;
-				long dimFile = -1;
-
-				File curFile = new File(nomeFile);
+				curFile = new File(nomeFile);
 				synchronized (curFile.getCanonicalPath().intern()) {
 					esito = curFile.exists() ? "salta" : "attiva";
 					if (esito.equals("attiva")) outFile = new FileOutputStream(nomeFile);
@@ -119,13 +113,13 @@ class PutFileServerThread extends Thread {
 						try {
 							dimFile = inSock.readLong();
 							System.out.println("dimensione di " + nomeFile + ": " + dimFile);
-						}
-						catch (SocketTimeoutException ste) {
+						} catch (SocketTimeoutException ste) {
 							System.out.println("Timeout scattato: ");
 							ste.printStackTrace();
 							clientSocket.close();
 							break;
-						} catch (IOException e) {
+						}
+						catch (IOException e) {
 							System.out.println("Problemi nella ricezione della lunghezza del file, termino la connessione ");
 							clientSocket.close();
 							break;
