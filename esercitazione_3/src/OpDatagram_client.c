@@ -13,11 +13,7 @@
 
 /*Struttura di una richiesta*/
 /********************************************************/
-typedef struct{
-	int op1;
-	int op2;
-	char tipoOp;
-}Request;
+typedef char stringa [LINE_LENGTH];
 /********************************************************/
 
 int main(int argc, char **argv)
@@ -25,9 +21,9 @@ int main(int argc, char **argv)
 	struct hostent *host;
 	struct sockaddr_in clientaddr, servaddr;
 	int  port, sd, num1, num2, len, ris, ok;
-	char okstr[LINE_LENGTH];
+	stringa okstr;
+	stringa nameFile;
 	char c;
-	Request req;
 
 	/* CONTROLLO ARGOMENTI ---------------------------------- */
 	if(argc!=3){
@@ -86,15 +82,18 @@ int main(int argc, char **argv)
 	printf("Client: bind socket ok, alla porta %i\n", clientaddr.sin_port);
 
 	/* CORPO DEL CLIENT: ciclo di accettazione di richieste da utente */
-	printf("Primo operando (intero), EOF per terminare: ");
+	printf("Inserire nome file, EOF per terminare: ");
 
 	/* ATTENZIONE!!
 	* Cosa accade se la riga e' piu' lunga di LINE_LENGTH-1?
 	* Stesso dicasi per le altre gets...
 	* Come si potrebbe risolvere il problema?
 	*/
-	while ((ok=scanf("%i", &num1)) != EOF )
+	while ((ok=scanf("%s", &nameFile)) != EOF )
 	{
+		
+		printf("nameFile: %s \n", &nameFile);
+
 		if( ok != 1){
 			/* Problema nell'implementazione della scanf. Se l'input contiene PRIMA
 			* dell'intero altri caratteri la testina di lettura si blocca sul primo carattere
@@ -102,48 +101,13 @@ int main(int argc, char **argv)
 			*				  ^     La testina si blocca qui
 			* Bisogna quindi consumare tutto il buffer in modo da sbloccare la testina.
 			*/
-			do {c=getchar(); printf("%c ", c);}
+			do{c=getchar(); printf("%c ", c);}
 			while (c!= '\n');
-			printf("Inserire il Primo operando (intero), EOF per terminare: ");
 			continue;
 		}
 
-    		// quando arrivo qui l'input e' stato letto correttamente
-		req.op1=htonl(num1);
-		// Consumo il new line, ed eventuali altri caratteri
-		// immessi nella riga dopo l'intero letto
-		gets(okstr);  
-		printf("Stringa letta: %s\n", okstr);
-
-		printf("Inserire secondo operando (intero): ");
-
-		while (scanf("%i", &num2) != 1){
-			do{c=getchar(); printf("%c ", c);}
-			while (c!= '\n');
-			printf("Secondo operando (intero): ");
-		}
-
-		req.op2=htonl(num2);
-		gets(okstr); //consumo resto linea
-		printf("Stringa letta: %s\n", okstr);
-
-		do{
-			printf("Operazione (+ = addizione, - = sottrazione, * = moltiplicazione, / = divisione): ");
-			c = getchar();
-		}
-		while (c!='+' && c !='-' && c!='*' && c !='/');
-
-		req.tipoOp=c;
-		gets(okstr); //consumo resto linea
-		printf("Stringa letta: %s\n", okstr);
-
-		/* lettura completata */
-		printf("Operazione richiesta: %d %c %d \n",
-			ntohl(req.op1), req.tipoOp, ntohl(req.op2));
-
-		/* richiesta operazione */
 		len=sizeof(servaddr);
-		if(sendto(sd, &req, sizeof(Request), 0, (struct sockaddr *)&servaddr, len)<0){
+		if(sendto(sd, &nameFile, sizeof(nameFile), 0, (struct sockaddr *)&servaddr, len)<0){
 			perror("sendto");
 			continue;
 		}
@@ -154,7 +118,7 @@ int main(int argc, char **argv)
 			perror("recvfrom"); continue;}
 
 		printf("Esito dell'operazione: %i\n", (int)ntohl(ris));
-		printf("Primo operando (intero), EOF per terminare: ");
+		printf("Inserire nome file, EOF per terminare: ");
 
 	} // while gets
 	
