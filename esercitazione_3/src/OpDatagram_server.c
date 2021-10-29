@@ -121,6 +121,8 @@ int main(int argc, char **argv)
 					currentDim=0;
 				}
 			}
+			
+			if(currentDim > ris) ris = currentDim;
 			fclose(in_file);
 		}
 
