@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	/* CORPO DEL CLIENT:
 	ciclo di accettazione di richieste da utente ------- */
 	printf("Ciclo di richieste di ordinamento fino a EOF\n");
-	printf("Nome del file da ordinare, EOF per terminare: ");
+	printf("Nome del file dove eliminare la linea, EOF per terminare: ");
 
 	/* ATTENZIONE!!
 	* Cosa accade se la riga e' piu' lunga di FILENAME_MAX-1?
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 			printf("Qualsiasi tasto per procedere, EOF per fine: ");
 			continue;
 		}
-		printf("Nome del file ordinato: ");
+		printf("Nome del file senza linea: ");
 		if (gets(nome_dest)==0) break;
 
 		/*Verifico creazione file*/
@@ -96,6 +96,12 @@ int main(int argc, char *argv[])
 		{perror("connect"); exit(1);}
 		printf("Client: connect ok\n");
 
+		/* RICHIEDO e INVIO Numero linea da eliminare */
+		printf("Inserire numero linea da eliminare (intero): ");
+		char number[256];
+		gets(number);
+		write(sd,number,sizeof(number));
+
 		/*INVIO File*/
 		printf("Client: stampo e invio file da ordinare\n");
 		while((nread=read(fd_sorg, buff, DIM_BUFF))>0){
@@ -107,7 +113,7 @@ int main(int argc, char *argv[])
 		shutdown(sd,1);
 
 		/*RICEZIONE File*/
-		printf("Client: ricevo e stampo file ordinato\n");
+		printf("Client: ricevo e stampo file senza la linea\n");
 		while((nread=read(sd,buff,DIM_BUFF))>0){
 			write(fd_dest,buff,nread);
 			write(1,buff,nread);
@@ -120,7 +126,7 @@ int main(int argc, char *argv[])
 		close(fd_dest);
 		close(sd);
 
-		printf("Nome del file da ordinare, EOF per terminare: ");
+		printf("Nome del file dove eliminare la linea, EOF per terminare: ");
 	}//while
 	printf("\nClient: termino...\n");
 	exit(0);

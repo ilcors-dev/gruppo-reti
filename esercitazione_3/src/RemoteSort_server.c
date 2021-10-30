@@ -25,6 +25,7 @@ void gestore(int signo){
 int main(int argc, char **argv)
 {
 	int  listen_sd, conn_sd;
+	char lineToDelete[256];
 	int port, len, num;
 	const int on = 1;
 	struct sockaddr_in cliaddr, servaddr;
@@ -100,6 +101,11 @@ int main(int argc, char **argv)
 
 		if (fork()==0){ // figlio
 			/*Chiusura FileDescr non utilizzati e ridirezione STDIN/STDOUT*/
+			//lettura linea da eliminare
+			read(conn_sd,&lineToDelete,sizeof(lineToDelete));
+			//concatenamento parametro delete della sed
+			strncat(lineToDelete,"d",1);
+			printf("ciao %s", lineToDelete);
 			close(listen_sd);
 			host=gethostbyaddr( (char *) &cliaddr.sin_addr, sizeof(cliaddr.sin_addr), AF_INET);
 			if (host == NULL){
@@ -123,8 +129,7 @@ int main(int argc, char **argv)
 			* Alcuni comandi UNIX per cercare path:
 			*	which; whereis...
 			*/
-			execl("/usr/bin/sort", "sort", (char *)0);
-
+			execl("/usr/bin/sed", "sed", lineToDelete, (char *)0);
 		} // figlio
 		close(conn_sd);  // padre chiude socket di connessione non di scolto
 	} // ciclo for infinito
