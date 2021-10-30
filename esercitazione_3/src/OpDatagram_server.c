@@ -97,10 +97,10 @@ int main(int argc, char **argv)
 		else
 			printf("Operazione richiesta da: %s %i\n", clienthost->h_name, (unsigned)ntohs(cliaddr.sin_port));
 
-		FILE *in_file = fopen(req, "r"); // read only
+		int in_file = open(req, O_RDONLY); // read only
 
 		// test for files not existing.
-		if (in_file == NULL)
+		if (in_file < 0)
 		{
 			printf("Error! Could not open file\n");
 		}
@@ -108,9 +108,11 @@ int main(int argc, char **argv)
 		{
 			char c;
 			int currentDim = 0;
+			int nread;
 			// read from file/keyboard. remember the ampersands!
-			while ((c = fgetc(in_file)) != EOF)
+			while ((nread = read(in_file, &c, sizeof(c))) > 0)
 			{
+				printf("entro");
 				if (c != ' ' && c != '\n')
 				{
 					currentDim++;
@@ -123,7 +125,7 @@ int main(int argc, char **argv)
 			}
 			
 			if(currentDim > ris) ris = currentDim;
-			fclose(in_file);
+			close(in_file);
 		}
 
 		ris = htonl(ris);
