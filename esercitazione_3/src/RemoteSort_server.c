@@ -105,7 +105,6 @@ int main(int argc, char **argv)
 			read(conn_sd,&lineToDelete,sizeof(lineToDelete));
 			//concatenamento parametro delete della sed
 			strncat(lineToDelete,"d",1);
-			printf("ciao %s", lineToDelete);
 			close(listen_sd);
 			host=gethostbyaddr( (char *) &cliaddr.sin_addr, sizeof(cliaddr.sin_addr), AF_INET);
 			if (host == NULL){

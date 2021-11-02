@@ -109,22 +109,22 @@ int main(int argc, char **argv)
 			char c;
 			int currentDim = 0;
 			int nread;
+			ris=-1;
 			// read from file/keyboard. remember the ampersands!
 			while ((nread = read(in_file, &c, sizeof(c))) > 0)
 			{
-				printf("entro");
 				if (c != ' ' && c != '\n')
 				{
 					currentDim++;
 				}
 				else
 				{
-					if (currentDim > ris) ris = currentDim;
+					if (currentDim > ris && currentDim != 0) ris = currentDim;
 					currentDim=0;
 				}
 			}
 			
-			if(currentDim > ris) ris = currentDim;
+			if(currentDim > ris && currentDim != 0) ris = currentDim;
 			close(in_file);
 		}
 
