@@ -103,6 +103,7 @@ int main(int argc, char **argv)
 		if (in_file < 0)
 		{
 			printf("Error! Could not open file\n");
+			continue;
 		}
 		else
 		{
