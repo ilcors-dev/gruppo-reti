@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 			char c;
 			int currentDim = 0;
 			int nread;
-			ris=-1;
+			ris = -1;
 			// read from file/keyboard. remember the ampersands!
 			while ((nread = read(in_file, &c, sizeof(c))) > 0)
 			{
@@ -119,14 +119,17 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					if (currentDim > ris && currentDim != 0) ris = currentDim;
-					currentDim=0;
+					if (currentDim > ris && currentDim != 0)
+						ris = currentDim;
+					currentDim = 0;
 				}
 			}
-			
-			if(currentDim > ris && currentDim != 0) ris = currentDim;
-			close(in_file);
+
+			if (currentDim > ris && currentDim != 0)
+				ris = currentDim;
 		}
+
+		close(in_file);
 
 		ris = htonl(ris);
 		if (sendto(sd, &ris, sizeof(ris), 0, (struct sockaddr *)&cliaddr, len) < 0)

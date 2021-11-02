@@ -13,20 +13,21 @@
 
 /*Struttura di una richiesta*/
 /********************************************************/
-typedef char stringa [LINE_LENGTH];
+typedef char stringa[LINE_LENGTH];
 /********************************************************/
 
 int main(int argc, char **argv)
 {
 	struct hostent *host;
 	struct sockaddr_in clientaddr, servaddr;
-	int  port, sd, num1, num2, len, ris, ok;
+	int port, sd, num1, num2, len, ris, ok;
 	stringa okstr;
 	stringa nameFile;
 	char c;
 
 	/* CONTROLLO ARGOMENTI ---------------------------------- */
-	if(argc!=3){
+	if (argc != 3)
+	{
 		printf("Error:%s serverAddress serverPort\n", argv[0]);
 		exit(1);
 	}
@@ -44,12 +45,14 @@ int main(int argc, char **argv)
 
 	memset((char *)&servaddr, 0, sizeof(struct sockaddr_in));
 	servaddr.sin_family = AF_INET;
-	host = gethostbyname (argv[1]);
+	host = gethostbyname(argv[1]);
 
 	/* VERIFICA INTERO */
-	num1=0;
-	while( argv[2][num1]!= '\0' ){
-		if( (argv[2][num1] < '0') || (argv[2][num1] > '9') ){
+	num1 = 0;
+	while (argv[2][num1] != '\0')
+	{
+		if ((argv[2][num1] < '0') || (argv[2][num1] > '9'))
+		{
 			printf("Secondo argomento non intero\n");
 			printf("Error:%s serverAddress serverPort\n", argv[0]);
 			exit(2);
@@ -59,26 +62,37 @@ int main(int argc, char **argv)
 	port = atoi(argv[2]);
 
 	/* VERIFICA PORT e HOST */
-	if (port < 1024 || port > 65535){
+	if (port < 1024 || port > 65535)
+	{
 		printf("%s = porta scorretta...\n", argv[2]);
 		exit(2);
 	}
-	if (host == NULL){
+	if (host == NULL)
+	{
 		printf("%s not found in /etc/hosts\n", argv[1]);
 		exit(2);
-	}else{
-		servaddr.sin_addr.s_addr=((struct in_addr *)(host->h_addr))->s_addr;
+	}
+	else
+	{
+		servaddr.sin_addr.s_addr = ((struct in_addr *)(host->h_addr))->s_addr;
 		servaddr.sin_port = htons(port);
 	}
 
 	/* CREAZIONE SOCKET ---------------------------------- */
-	sd=socket(AF_INET, SOCK_DGRAM, 0);
-	if(sd<0) {perror("apertura socket"); exit(1);}
+	sd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sd < 0)
+	{
+		perror("apertura socket");
+		exit(1);
+	}
 	printf("Client: creata la socket sd=%d\n", sd);
 
 	/* BIND SOCKET, a una porta scelta dal sistema --------------- */
-	if(bind(sd,(struct sockaddr *) &clientaddr, sizeof(clientaddr))<0)
-	{perror("bind socket "); exit(1);}
+	if (bind(sd, (struct sockaddr *)&clientaddr, sizeof(clientaddr)) < 0)
+	{
+		perror("bind socket ");
+		exit(1);
+	}
 	printf("Client: bind socket ok, alla porta %i\n", clientaddr.sin_port);
 
 	/* CORPO DEL CLIENT: ciclo di accettazione di richieste da utente */
@@ -89,41 +103,49 @@ int main(int argc, char **argv)
 	* Stesso dicasi per le altre gets...
 	* Come si potrebbe risolvere il problema?
 	*/
-	while ((ok=scanf("%s", &nameFile)) != EOF )
+	while ((ok = scanf("%s", &nameFile)) != EOF)
 	{
-		
+
 		printf("nameFile: %s \n", &nameFile);
 
-		if( ok != 1){
+		if (ok != 1)
+		{
 			/* Problema nell'implementazione della scanf. Se l'input contiene PRIMA
 			* dell'intero altri caratteri la testina di lettura si blocca sul primo carattere
 			* (non intero) letto. Ad esempio: ab1292\n
 			*				  ^     La testina si blocca qui
 			* Bisogna quindi consumare tutto il buffer in modo da sbloccare la testina.
 			*/
-			do{c=getchar(); printf("%c ", c);}
-			while (c!= '\n');
+			do
+			{
+				c = getchar();
+				printf("%c ", c);
+			} while (c != '\n');
 			continue;
 		}
 
-		len=sizeof(servaddr);
-		if(sendto(sd, &nameFile, sizeof(nameFile), 0, (struct sockaddr *)&servaddr, len)<0){
+		len = sizeof(servaddr);
+		if (sendto(sd, &nameFile, sizeof(nameFile), 0, (struct sockaddr *)&servaddr, len) < 0)
+		{
 			perror("sendto");
 			continue;
 		}
 
 		/* ricezione del risultato */
 		printf("Attesa del risultato...\n");
-		if (recvfrom(sd, &ris, sizeof(ris), 0, (struct sockaddr *)&servaddr, &len)<0){
-			perror("recvfrom"); continue;}
+		if (recvfrom(sd, &ris, sizeof(ris), 0, (struct sockaddr *)&servaddr, &len) < 0)
+		{
+			perror("recvfrom");
+			continue;
+		}
 
 		printf("Esito dell'operazione: %i\n", (int)ntohl(ris));
 		printf("Inserire nome file, EOF per terminare: ");
 
 	} // while gets
-	
+
 	//CLEAN OUT
 	close(sd);
-	printf("\nClient: termino...\n");  
+	printf("\nClient: termino...\n");
 	exit(0);
 }
