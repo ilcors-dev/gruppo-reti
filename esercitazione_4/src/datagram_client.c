@@ -70,7 +70,7 @@ int main(int argc, char **argv){
 	printf("Client: bind socket ok, alla porta %i\n", clientaddr.sin_port);
 
 	/* CORPO DEL CLIENT: */
-	printf("Nome del direttorio: ");
+	printf("Nome_file;Paorla: ");
 
 	while (gets(nome_dir)){
 		/* invio richiesta */
