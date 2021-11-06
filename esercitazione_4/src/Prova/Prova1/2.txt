@@ -1,0 +1,4 @@
+questo file
+deve essere inviato
+dal server al client
+Fine!
