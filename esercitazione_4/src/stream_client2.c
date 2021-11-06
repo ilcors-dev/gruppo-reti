@@ -78,10 +78,18 @@ int main(int argc, char *argv[]){
 
 		if (ok=='S'){
 			printf("Ricevo i file:\n");
-			while((read(sd,buff,sizeof(buff))) > 0) {
-				printf("%s",buff);
+			while((nread = read(sd,buff,sizeof(buff))) > 0) {
+				if(strcmp(buff,"\0") != 0){
+					write(0,buff,nread);
+					printf("\n");
+				}
+				else break;
 			}
 		}
+		else if (ok=='N') printf("File inesistente\n");
+		else printf("Errore di protocollo\n"); //controllare sempre che il protocollo sia rispettato
+
+		printf("Nome del direttorio da richiedere: ");
 	}//while
 	printf("\nClient: termino...\n");
 	shutdown(sd,0);
