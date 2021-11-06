@@ -269,7 +269,21 @@ int main(int argc, char **argv) {
 						printf("Dir inesistente\n");
 						write(connfd, "N", 1);
 					}
+					else {
+						write(connfd, "S", 1);
+						while ((dp = readdir(dir)) != NULL) {
+							if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0){
+
+								strcpy(tempD_name,nomedir); 
+								strcat(tempD_name,"/"); 
+								strcat(tempD_name,dp->d_name);
 					
+								if(stat(tempD_name, &sb) == 0 && S_ISDIR(sb.st_mode)) {
+									write(0, fileName, sizeof(fileName));
+								}
+							}
+						}
+					}
 					closedir(dir);
 				}
 
