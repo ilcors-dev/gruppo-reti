@@ -285,6 +285,7 @@ int main(int argc, char **argv) {
 										if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
 											strncpy(fileName, dp->d_name, 254);
 											fileName[255] = '\0';
+											write(0, fileName, sizeof(fileName));
 											if (write(connfd, fileName, sizeof(fileName)) < 0) {
 												perror("write");
 												break;
