@@ -65,24 +65,23 @@ int main(int argc, char *argv[]){
 
 	while (gets(nome_file)){
 
+		if (write(sd, nome_file, (strlen(nome_file)+1))<0){
+			perror("write");
+			break;
+		}
+		printf("Richiesta del file %s inviata... \n", nome_file);
+
 		if (read(sd, &ok, 1)<0){
 			perror("read");      
 			break;
 		}
 
 		if (ok=='S'){
-			printf("Ricevo il file:\n");
-			while((nread=read(sd,&c,1))>0) // leggo a caratteri per individuare il fine file
-				if (c!='\0'){
-					write(1,&c,1);
-				}
-				else break;
-			if( nread < 0 ){perror("read");break;}
+			printf("Ricevo i file:\n");
+			while((read(sd,buff,sizeof(buff))) > 0) {
+				printf("%s",buff);
+			}
 		}
-		else if (ok=='N') printf("File inesistente\n");
-		else printf("Errore di protocollo\n"); //controllare sempre che il protocollo sia rispettato
-
-		printf("Nome del file da richiedere: ");
 	}//while
 	printf("\nClient: termino...\n");
 	shutdown(sd,0);
