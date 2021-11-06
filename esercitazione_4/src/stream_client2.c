@@ -10,12 +10,12 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#define DIM_BUFF 100
+#define DIM_BUFF 255
 #define LENGTH_FILE_NAME 20
 
 int main(int argc, char *argv[]){
 	int sd, nread, port;
-	char c, ok, nome_file[LENGTH_FILE_NAME];
+	char c, ok, nome_file[LENGTH_FILE_NAME], buff[DIM_BUFF];
 	struct hostent *host;
 	struct sockaddr_in servaddr;  
 
@@ -61,15 +61,9 @@ int main(int argc, char *argv[]){
 
 	/* CORPO DEL CLIENT: */
 	/* ciclo di accettazione di richieste di file ------- */
-	printf("Nome del file da richiedere: ");
+	printf("Nome del direttorio da richiedere: ");
 
 	while (gets(nome_file)){
-
-		if (write(sd, nome_file, (strlen(nome_file)+1))<0){
-			perror("write");
-			break;
-		}
-		printf("Richiesta del file %s inviata... \n", nome_file);
 
 		if (read(sd, &ok, 1)<0){
 			perror("read");      
