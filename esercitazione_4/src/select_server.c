@@ -255,6 +255,24 @@ int main(int argc, char **argv) {
 				char fileName[255];
 				char tempD_name[255];
 
+				while(read(connfd, &nomedir, sizeof(nomedir)) > 0){
+					
+					getcwd(dirPath, sizeof(dirPath));
+					strcat(dirPath,"/"); 
+					strcat(dirPath,nomedir);
+
+					printf("Richiesto Dir %s\n", dirPath);
+
+					DIR *dir = opendir(dirPath);
+
+					if (!dir) {
+						printf("Dir inesistente\n");
+						write(connfd, "N", 1);
+					}
+					
+					closedir(dir);
+				}
+
 				/*la connessione assegnata al figlio viene chiusa*/
 				printf("Figlio %i: termino\n", getpid());
 				shutdown(connfd, 0);
