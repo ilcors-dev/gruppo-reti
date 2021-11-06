@@ -11,10 +11,12 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <dirent.h>
 
 #define DIM_BUFF 100
 #define LENGTH_FILE_NAME 100
@@ -112,8 +114,7 @@ void gestore(int signo)
 }
 /********************************************************/
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	int listenfd, connfd, udpfd, fd_file, nready, maxfdp1;
 	const int on = 1;
 	char buff[DIM_BUFF], nome_file[LENGTH_FILE_NAME], nomedir[LENGTH_FILE_NAME];
@@ -213,8 +214,7 @@ int main(int argc, char **argv)
 	maxfdp1 = max(listenfd, udpfd) + 1;
 
 	/* CICLO DI RICEZIONE EVENTI DALLA SELECT ----------------------------------- */
-	for (;;)
-	{
+	for (;;) {
 		/* ASSEGNO A MASCHERA FILE DESCRIPTOR DI SOCKET UDP E TCP */
 		FD_SET(listenfd, &rset);
 		FD_SET(udpfd, &rset);
@@ -231,8 +231,7 @@ int main(int argc, char **argv)
 		}
 
 		/* GESTIONE RICHIESTE DI GET DI UN FILE ------------------------------------- */
-		if (FD_ISSET(listenfd, &rset))
-		{
+		if (FD_ISSET(listenfd, &rset)) {
 			printf("Ricevuta richiesta di get di un file\n");
 			len = sizeof(struct sockaddr_in);
 			if ((connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &len)) < 0)
@@ -246,42 +245,15 @@ int main(int argc, char **argv)
 				}
 			}
 
-			if (fork() == 0)
-			{ /* processo figlio che serve la richiesta di operazione */
+			if (fork() == 0) { 
 				close(listenfd);
 				printf("Dentro il figlio, pid=%i\n", getpid());
-				/* non c'� pi� il ciclo perch� viene creato un nuovo figlio */
-				/* per ogni richiesta di file */
-				if (read(connfd, &nomedir, sizeof(nomedir)) <= 0)
-				{
-					perror("read");
-					break;
-				}
-
-				printf("Richiesto file %s\n", nomedir);
-				fd_file = open(nome_file, O_RDONLY);
-				if (fd_file < 0)
-				{
-					printf("File inesistente\n");
-					write(connfd, "N", 1);
-				}
-				else
-				{
-					write(connfd, "S", 1);
-					/* lettura e invio del file (a blocchi)*/
-					printf("Leggo e invio il file richiesto\n");
-					while ((nread = read(fd_file, buff, sizeof(buff))) > 0)
-					{
-						if ((nwrite = write(connfd, buff, nread)) < 0)
-						{
-							perror("write");
-							break;
-						}
-					}
-					printf("Terminato invio file\n");
-					/* non � pi� necessario inviare al client un segnale di terminazione */
-					close(fd_file);
-				}
+				
+				struct dirent *dp;
+				struct stat sb;	
+				char dirPath[255];
+				char fileName[255];
+				char tempD_name[255];
 
 				/*la connessione assegnata al figlio viene chiusa*/
 				printf("Figlio %i: termino\n", getpid());
@@ -290,10 +262,6 @@ int main(int argc, char **argv)
 				close(connfd);
 				exit(0);
 			} //figlio-fork
-			  /* padre chiude la socket dell'operazione */
-			  /*shutdown(connfd,0);
-			shutdown(connfd,1);
-			close(connfd);*/
 		}	  /* fine gestione richieste di file */
 
 		/* GESTIONE RICHIESTE DI CONTEGGIO ------------------------------------------ */
