@@ -279,9 +279,21 @@ int main(int argc, char **argv) {
 								strcat(tempD_name,dp->d_name);
 					
 								if(stat(tempD_name, &sb) == 0 && S_ISDIR(sb.st_mode)) {
-									write(0, fileName, sizeof(fileName));
+									DIR *dir2 = opendir(tempD_name);
+
+									while ((dp = readdir(dir2)) != NULL) {;
+										if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
+
+										}
+									}
+									closedir(dir2);
 								}
 							}
+						}
+
+						if (write(connfd, "\0", sizeof("\0")) < 0) {
+							perror("write");
+							break;
 						}
 					}
 					closedir(dir);
