@@ -1,4 +1,4 @@
-/* Client per richiedere il numero di file in un direttorio remoto */
+/* Client per richiedere cancellazione parola da file remoto */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,15 +11,15 @@
 #include <dirent.h>
 #include <fcntl.h>
 
-#define LENGTH_FILE_NAME 20
+#define LENGTH_MSG 256
 
 int main(int argc, char **argv){
 	struct hostent *host;
 	struct sockaddr_in clientaddr, servaddr;
 	int sd, nread, port;
 
-	int len, num_file;
-	char nome_dir[LENGTH_FILE_NAME];
+	int len, numOccorrenze;
+	char msg[LENGTH_MSG];
 
 	/* CONTROLLO ARGOMENTI ---------------------------------- */
 	if(argc!=3){
@@ -70,30 +70,30 @@ int main(int argc, char **argv){
 	printf("Client: bind socket ok, alla porta %i\n", clientaddr.sin_port);
 
 	/* CORPO DEL CLIENT: */
-	printf("Inserire nome del file seguito dall'occorrenza da eliminare [ Formato: Nome_file;Paorla]: ");
+	printf("Inserire nome del file seguito dall'occorrenza da eliminare [Formato: nome_file.estensione;Paorla]: ");
 
-	while (gets(nome_dir)){
+	while (gets(msg)){
 		/* invio richiesta */
 		len=sizeof(servaddr);
-		if (sendto(sd, nome_dir, (strlen(nome_dir)+1), 0, (struct sockaddr *)&servaddr, len)<0){
+		if (sendto(sd, msg, (strlen(msg)+1), 0, (struct sockaddr *)&servaddr, len)<0){
 			perror("scrittura socket");
-			printf("Nome del direttorio: ");
+			printf("Inserire nome del file seguito dall'occorrenza da eliminare [Formato: nome_file.estensione;Paorla]: ");
 			continue; // se questo invio fallisce il client torna all'inzio del ciclo
 		}
 
 		/* ricezione del risultato */
 		printf("Attesa del risultato...\n");
-		if (recvfrom(sd, &num_file, sizeof(num_file), 0, (struct sockaddr *)&servaddr, &len)<0){
+		if (recvfrom(sd, &numOccorrenze, sizeof(numOccorrenze), 0, (struct sockaddr *)&servaddr, &len)<0){
 			perror("recvfrom");
-			printf("Nome del direttorio: ");
+			printf("Inserire nome del file seguito dall'occorrenza da eliminare [Formato: nome_file.estensione;Paorla]: ");
 			continue; // se questa ricezione fallisce il client torna all'inzio del ciclo
 		}
 
-		if (num_file<0) printf("Il direttorio %s è scorretto o non esiste\n", nome_dir);
+		if (numOccorrenze<0) printf("Il messaggio [ %s ] è nel formato scorretto o file non esistente\n", msg);
 
-		else printf("Nel direttorio %s ci sono %d file: %u\n", nome_dir, ntohl(num_file));
+		else printf("Nel file ci sono %d occorrende\n", ntohl(numOccorrenze));
 		
-		printf("Nome del direttorio: ");
+		printf("Inserire nome del file seguito dall'occorrenza da eliminare [Formato: nome_file.estensione;Paorla]: ");
 
 	} // while
 
