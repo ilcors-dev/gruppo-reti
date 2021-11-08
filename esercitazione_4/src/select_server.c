@@ -22,87 +22,65 @@
 #define LENGTH_FILE_NAME 100
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
-/*Funzione conteggio file in un direttorio*/
-/********************************************************/
-int conta_file(char *name)
-{
-	DIR *dir;
-	struct dirent *dd;
-	int count = 0;
-	dir = opendir(name);
-	if (dir == NULL)
-		return -1;
-	while ((dd = readdir(dir)) != NULL)
-	{
-		printf("Trovato il file %s\n", dd->d_name);
-		count++;
-	}
-	/*Conta anche direttorio stesso e padre*/
-	printf("Numero totale di file %d\n", count);
-	closedir(dir);
-	return count;
-}
 /********************************************************/
 /*Funzione conteggio parole in un file*/
 /********************************************************/
-int conta_parole_cancellate(char *name)
+int conta_parole_cancellate(char * msg)
 {
-	int count = 0, fdread, fdwrite, lenParola, counter = 0, dimStringFileName = 0;
+	int numParoleCancellate = 0, fdread, fdwrite, lenParola, curIndexBuff = 0, curIndexStringFileName = 0;
 	char filename[LENGTH_FILE_NAME];
 	char buff[DIM_BUFF], temp;
 
-	while (*(name) != ';')
+	while (*(msg) != ';')
 	{
-		filename[dimStringFileName] = *(name);
-		name++;
-		dimStringFileName++;
+		filename[curIndexStringFileName] = *(msg);
+		msg++;
+		curIndexStringFileName++;
 	}
-	name++;
-	filename[dimStringFileName+1] = '\0';
+	msg++; //da questo momento il file contiene solo la parola da eliminare
+	filename[curIndexStringFileName+1] = '\0';
 	printf("Nome file estrapolato %s\n", filename);
-	printf("Parola da rimuovere %s\n", name);
+	printf("Parola da rimuovere %s\n", msg);
 
-	lenParola = strlen(name);
+	lenParola = strlen(msg);
 	if ((fdread = open(filename, O_RDONLY)) == -1)
 		return -1;
-	if ((fdwrite = open("temp.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1)
+	if ((fdwrite = open(strcat(filename,"NEW"), O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1)
 		return -1;
 	while ((read(fdread, &temp, 1)) > 0)
 	{
 		printf("Carattere letto: %c\n", temp);
-		if (counter == lenParola)
+		if (curIndexBuff == lenParola)
 		{		
-			if ((temp >= 'A' && temp <= 'Z') || (temp >= 'a' && temp <= 'z')) //Parola composta
+			if ((temp >= 'A' && temp <= 'Z') || (temp >= 'a' && temp <= 'z')) //Parola composta da quella ricercata
 			{
-				buff[counter + 1] = temp;
-				write(fdwrite, buff, counter + 2);
-				counter = 0;
+				buff[curIndexBuff + 1] = temp;
+				write(fdwrite, buff, curIndexBuff + 2);
+				curIndexBuff = 0;
 			} else { //Parola cancellata
-				count++;
-				counter = 0;
-				printf("Carattere scritto dopo parola rifiutata: %c\n", temp);
+				numParoleCancellate++;
+				curIndexBuff = 0;
 				write(fdwrite, &temp, 1);
 			}	 
 		}
 		else //Non ho ancora niente di significativo buffer
 		{
-			if (counter < lenParola && temp == name[counter]) //Ho un carattere interessante
+			if (curIndexBuff < lenParola && temp == msg[curIndexBuff]) //Ho un carattere interessante
 			{
-				printf("Carattere letto interessante: %c\n", temp);
-				buff[counter] = temp;
-				counter++;
+				buff[curIndexBuff] = temp;
+				curIndexBuff++;
 			}
 			else
 			{
-				printf("Carattere letto poco utile: %c\n", temp);
-				buff[counter] = temp;
-				write(fdwrite, buff, counter+1);
-				counter = 0;
+				buff[curIndexBuff] = temp;
+				write(fdwrite, buff, curIndexBuff+1);
+				numParoleCancellate = 0;
 			}
 		}
 	}
-	printf("Numero totale di parole %d\n", count);
-	return count;
+	printf("Numero totale di parole %d\n", numParoleCancellate);
+	close(fdread); close(fdwrite);
+	return numParoleCancellate;
 }
 /********************************************************/
 
@@ -117,7 +95,7 @@ void gestore(int signo)
 int main(int argc, char **argv) {
 	int listenfd, connfd, udpfd, fd_file, nready, maxfdp1;
 	const int on = 1;
-	char buff[DIM_BUFF], nome_file[LENGTH_FILE_NAME], nomedir[LENGTH_FILE_NAME];
+	char buff[DIM_BUFF], udp_msg[LENGTH_FILE_NAME], nomedir[LENGTH_FILE_NAME];
 	fd_set rset;
 	int len, nread, nwrite, num, ris, port;
 	struct sockaddr_in cliaddr, servaddr;
@@ -232,7 +210,7 @@ int main(int argc, char **argv) {
 
 		/* GESTIONE RICHIESTE DI GET DI UN FILE ------------------------------------- */
 		if (FD_ISSET(listenfd, &rset)) {
-			printf("Ricevuta richiesta di get di un file\n");
+			printf("Ricevuta richiesta di get di una directory\n");
 			len = sizeof(struct sockaddr_in);
 			if ((connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &len)) < 0)
 			{
@@ -320,14 +298,14 @@ int main(int argc, char **argv) {
 			printf("Ricevuta richiesta di conteggio file\n");
 
 			len = sizeof(struct sockaddr_in);
-			if (recvfrom(udpfd, &nome_file, sizeof(nome_file), 0, (struct sockaddr *)&cliaddr, &len) < 0)
+			if (recvfrom(udpfd, &udp_msg, sizeof(udp_msg), 0, (struct sockaddr *)&cliaddr, &len) < 0)
 			{
 				perror("recvfrom");
 				continue;
 			}
 
-			printf("Richiesto eliminazione parole da file %s\n", nome_file);
-			num = conta_parole_cancellate(nome_file);
+			printf("Richiesto eliminazione parole da file %s\n", udp_msg);
+			num = conta_parole_cancellate(udp_msg);
 			printf("Risultato del conteggio: %i\n", num);
 
 			/*
