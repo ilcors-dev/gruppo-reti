@@ -70,7 +70,7 @@ int main(int argc, char **argv){
 	printf("Client: bind socket ok, alla porta %i\n", clientaddr.sin_port);
 
 	/* CORPO DEL CLIENT: */
-	printf("Nome_file;Paorla: ");
+	printf("Inserire nome del file seguito dall'occorrenza da eliminare [ Formato: Nome_file;Paorla]: ");
 
 	while (gets(nome_dir)){
 		/* invio richiesta */
