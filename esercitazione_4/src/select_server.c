@@ -22,26 +22,6 @@
 #define LENGTH_FILE_NAME 100
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
-/*Funzione conteggio file in un direttorio*/
-/********************************************************/
-int conta_file(char *name)
-{
-	DIR *dir;
-	struct dirent *dd;
-	int count = 0;
-	dir = opendir(name);
-	if (dir == NULL)
-		return -1;
-	while ((dd = readdir(dir)) != NULL)
-	{
-		printf("Trovato il file %s\n", dd->d_name);
-		count++;
-	}
-	/*Conta anche direttorio stesso e padre*/
-	printf("Numero totale di file %d\n", count);
-	closedir(dir);
-	return count;
-}
 /********************************************************/
 /*Funzione conteggio parole in un file*/
 /********************************************************/
@@ -51,13 +31,13 @@ int conta_parole_cancellate(char *name)
 	char filename[LENGTH_FILE_NAME];
 	char buff[DIM_BUFF], temp;
 
-	while (*(name) != ';')
+	while (*(name) != ';' && *(name) != '\0')
 	{
 		filename[dimStringFileName] = *(name);
 		name++;
 		dimStringFileName++;
 	}
-	name++;
+	if (*(name) != '\0') name++;
 	filename[dimStringFileName+1] = '\0';
 	printf("Nome file estrapolato %s\n", filename);
 	printf("Parola da rimuovere %s\n", name);
@@ -101,6 +81,9 @@ int conta_parole_cancellate(char *name)
 			}
 		}
 	}
+	rename("temp.txt", filename);
+	close(fdread);
+	close(fdwrite);
 	printf("Numero totale di parole %d\n", count);
 	return count;
 }
@@ -252,7 +235,7 @@ int main(int argc, char **argv) {
 				struct dirent *dp;
 				struct stat sb;	
 				char dirPath[255];
-				char fileName[255];
+				char fileName[256];
 				char tempD_name[255];
 
 				while(read(connfd, &nomedir, sizeof(nomedir)) > 0){
