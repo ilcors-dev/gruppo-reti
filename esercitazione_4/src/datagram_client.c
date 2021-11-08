@@ -11,7 +11,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 
-#define LENGTH_MSG 256
+#define LENGTH_MSG 100
 
 int main(int argc, char **argv){
 	struct hostent *host;
