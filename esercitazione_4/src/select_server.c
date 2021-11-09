@@ -101,6 +101,9 @@ int conta_parole_cancellate(char *msg)
 			}
 		}
 	}
+	buff[curDimBuff] = '\0';
+	printf("Buff restante: %s\n", buff);
+	if (strcmp(buff, msg) == 0) numOcc++;
 	close(fdwrite); close(fdread);
 	rename("temp.txt",filename);
 	printf("Numero totale di parole %d\n", numOcc);
