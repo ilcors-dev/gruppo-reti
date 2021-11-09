@@ -101,9 +101,11 @@ int conta_parole_cancellate(char *msg)
 			}
 		}
 	}
-	buff[curDimBuff] = '\0';
-	printf("Buff restante: %s\n", buff);
-	if (strcmp(buff, msg) == 0) numOcc++;
+	if (curDimBuff > 0) {
+		buff[curDimBuff] = '\0';
+		printf("Buff restante: %s\n", buff);
+		if (strcmp(buff, msg) == 0) numOcc++;
+	}
 	close(fdwrite); close(fdread);
 	rename("temp.txt",filename);
 	printf("Numero totale di parole %d\n", numOcc);
@@ -289,7 +291,7 @@ int main(int argc, char **argv) {
 									while ((dp = readdir(dir2)) != NULL) {;
 										if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
 											strncpy(fileName, dp->d_name, 254);
-											fileName[255] = '\0';
+											fileName[254] = '\0';
 											write(0, fileName, sizeof(fileName));
 											if (write(connfd, fileName, sizeof(fileName)) < 0) {
 												perror("write");
