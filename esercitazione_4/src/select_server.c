@@ -30,13 +30,13 @@ int conta_parole_cancellate(char *msg)
 	char filename[LENGTH_FILE_NAME];
 	char buff[DIM_BUFF], temp;
 
-	while (*(msg) != ';' && *(msg) != '\0' && *(msg) != '\n')
+	while (*(msg) != ';' && *(msg) != '\0')
 	{
 		filename[dimStringFileName] = *(msg);
 		msg++;
 		dimStringFileName++;
 	}
-	if (*(msg) != '\0' && *(msg) != '\n') msg++; else return  -1; //msg++ per consumare ;
+	if (strlen(msg) > 1 && *(msg) == ';') msg++; else return  -1;//msg++ per consumare ;
 	filename[dimStringFileName] = '\0';
 	printf("Nome file estrapolato %s\n", filename);
 	printf("Parola da rimuovere %s\n", msg);
