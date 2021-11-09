@@ -19,7 +19,7 @@ int main(int argc, char **argv){
 	int sd, nread, port;
 
 	int len, num_file;
-	char nome_dir[LENGTH_FILE_NAME];
+	char msg[LENGTH_FILE_NAME];
 
 	/* CONTROLLO ARGOMENTI ---------------------------------- */
 	if(argc!=3){
@@ -70,14 +70,14 @@ int main(int argc, char **argv){
 	printf("Client: bind socket ok, alla porta %i\n", clientaddr.sin_port);
 
 	/* CORPO DEL CLIENT: */
-	printf("Nome_file;Paorla: ");
+	printf("Inserisci nome del file seguito da parola da rimuovere [Formato: nome_file.ext;parola] :");
 
-	while (gets(nome_dir)){
+	while (gets(msg)){
 		/* invio richiesta */
 		len=sizeof(servaddr);
-		if (sendto(sd, nome_dir, (strlen(nome_dir)+1), 0, (struct sockaddr *)&servaddr, len)<0){
+		if (sendto(sd, msg, (strlen(msg)+1), 0, (struct sockaddr *)&servaddr, len)<0){
 			perror("scrittura socket");
-			printf("Nome del direttorio: ");
+			printf("Inserisci nome del file seguito da parola da rimuovere [Formato: nome_file.ext;parola] :");
 			continue; // se questo invio fallisce il client torna all'inzio del ciclo
 		}
 
@@ -85,15 +85,15 @@ int main(int argc, char **argv){
 		printf("Attesa del risultato...\n");
 		if (recvfrom(sd, &num_file, sizeof(num_file), 0, (struct sockaddr *)&servaddr, &len)<0){
 			perror("recvfrom");
-			printf("Nome del direttorio: ");
+			printf("Inserisci nome del file seguito da parola da rimuovere [Formato: nome_file.ext;parola] :");
 			continue; // se questa ricezione fallisce il client torna all'inzio del ciclo
 		}
 
-		if (num_file<0) printf("Il direttorio %s è scorretto o non esiste\n", nome_dir);
+		if (num_file<0) printf("Il messaggio %s è scorretto o non esiste il file\n", msg);
 
-		else printf("Nel direttorio %s ci sono %d file: %u\n", nome_dir, ntohl(num_file));
+		else printf("Nel file del messaggio %s ci sono %d occorrenze.\n", msg, ntohl(num_file));
 		
-		printf("Nome del direttorio: ");
+		printf("Inserisci nome del file seguito da parola da rimuovere [Formato: nome_file.ext;parola] :");
 
 	} // while
 
