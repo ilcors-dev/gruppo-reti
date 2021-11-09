@@ -11,7 +11,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 
-#define LENGTH_FILE_NAME 20
+#define LENGTH_FILE_NAME 100
 
 int main(int argc, char **argv){
 	struct hostent *host;

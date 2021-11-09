@@ -45,24 +45,24 @@ int conta_file(char *name)
 /********************************************************/
 /*Funzione conteggio parole in un file*/
 /********************************************************/
-int conta_parole_cancellate(char *name)
+int conta_parole_cancellate(char *msg)
 {
-	int count = 0, fdread, fdwrite, lenParola, counter = 0, dimStringFileName = 0;
+	int numOcc = 0, fdread, fdwrite, lenParola, curDimBuff = 0, dimStringFileName = 0;
 	char filename[LENGTH_FILE_NAME];
 	char buff[DIM_BUFF], temp;
 
-	while (*(name) != ';')
+	while (*(msg) != ';' && *(msg) != '\0' && *(msg) != '\n')
 	{
-		filename[dimStringFileName] = *(name);
-		name++;
+		filename[dimStringFileName] = *(msg);
+		msg++;
 		dimStringFileName++;
 	}
-	name++;
-	filename[dimStringFileName+1] = '\0';
+	if (*(msg) != '\0' && *(msg) != '\n') msg++;
+	filename[dimStringFileName] = '\0';
 	printf("Nome file estrapolato %s\n", filename);
-	printf("Parola da rimuovere %s\n", name);
+	printf("Parola da rimuovere %s\n", msg);
 
-	lenParola = strlen(name);
+	lenParola = strlen(msg);
 	if ((fdread = open(filename, O_RDONLY)) == -1)
 		return -1;
 	if ((fdwrite = open("temp.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1)
@@ -70,39 +70,41 @@ int conta_parole_cancellate(char *name)
 	while ((read(fdread, &temp, 1)) > 0)
 	{
 		printf("Carattere letto: %c\n", temp);
-		if (counter == lenParola)
+		if (curDimBuff == lenParola)
 		{		
 			if ((temp >= 'A' && temp <= 'Z') || (temp >= 'a' && temp <= 'z')) //Parola composta
 			{
-				buff[counter + 1] = temp;
-				write(fdwrite, buff, counter + 1);
-				counter = 0;
+				write(fdwrite, buff, curDimBuff);
+				write(fdwrite, &temp, 1);
+				curDimBuff = 0;
 			} else { //Parola cancellata
-				count++;
-				counter = 0;
+				numOcc++;
+				curDimBuff = 0;
 				printf("Carattere scritto dopo parola rifiutata: %c\n", temp);
 				write(fdwrite, &temp, 1);
 			}	 
 		}
 		else //Non ho ancora niente di significativo buffer
 		{
-			if (counter < lenParola && temp == name[counter]) //Ho un carattere interessante
+			if (curDimBuff < lenParola && temp == msg[curDimBuff]) //Ho un carattere interessante
 			{
 				printf("Carattere letto interessante: %c\n", temp);
-				buff[counter] = temp;
-				counter++;
+				buff[curDimBuff] = temp;
+				curDimBuff++;
 			}
 			else
 			{
 				printf("Carattere letto poco utile: %c\n", temp);
-				buff[counter] = temp;
-				write(fdwrite, buff, counter+1);
-				counter = 0;
+				buff[curDimBuff] = temp;
+				write(fdwrite, buff, curDimBuff+1);
+				curDimBuff = 0;
 			}
 		}
 	}
-	printf("Numero totale di parole %d\n", count);
-	return count;
+	close(fdwrite); close(fdread);
+	rename("temp.txt",filename);
+	printf("Numero totale di parole %d\n", numOcc);
+	return numOcc;
 }
 /********************************************************/
 
