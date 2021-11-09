@@ -22,27 +22,6 @@
 #define LENGTH_FILE_NAME 100
 #define max(a, b) ((a) > (b) ? (a) : (b))
 
-/*Funzione conteggio file in un direttorio*/
-/********************************************************/
-int conta_file(char *name)
-{
-	DIR *dir;
-	struct dirent *dd;
-	int count = 0;
-	dir = opendir(name);
-	if (dir == NULL)
-		return -1;
-	while ((dd = readdir(dir)) != NULL)
-	{
-		printf("Trovato il file %s\n", dd->d_name);
-		count++;
-	}
-	/*Conta anche direttorio stesso e padre*/
-	printf("Numero totale di file %d\n", count);
-	closedir(dir);
-	return count;
-}
-/********************************************************/
 /*Funzione conteggio parole in un file*/
 /********************************************************/
 int conta_parole_cancellate(char *msg)
