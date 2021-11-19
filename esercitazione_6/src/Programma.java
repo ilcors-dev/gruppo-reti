@@ -1,5 +1,4 @@
-
-/** 
+/**
  * Programma.java
  * 	Serializable -> deve essere restituita da un metodo
  * 		remoto.
