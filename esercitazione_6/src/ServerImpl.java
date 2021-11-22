@@ -10,9 +10,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ServerImpl extends UnicastRemoteObject implements IServerImpl {
-    static Programma prog[];
-
-    // Costruttore
     public ServerImpl() throws RemoteException {
         super();
     }
@@ -53,28 +50,22 @@ public class ServerImpl extends UnicastRemoteObject implements IServerImpl {
     }
 
     @Override
-    public String[] elimina_riga(String filePath, int rowToDelete) throws RemoteException {
+    public synchronized String[] elimina_riga(String filePath, int rowToDelete) throws RemoteException {
         String[] result = new String[2];
         File file = new File(filePath);
         File tempOut = new File(filePath + "_temp");
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            FileWriter writer = new FileWriter(tempOut);
-            int c;
-            int rowIndex = 0;
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempOut));
+            String line;
+            int rowIndex = 1;
 
-            while ((c = reader.read()) != -1) {
-                if (c == 13) {
-                    rowIndex++;
-                    if(rowIndex != rowToDelete){
-                        writer.write('\n');
-                    }
-                } else {
-                    if (rowIndex != rowToDelete) {
-                        writer.write(c);
-                    }
+            while ((line = reader.readLine()) != null) {
+                if (rowIndex != rowToDelete) {
+                    writer.write(line + System.lineSeparator());
                 }
+                rowIndex++;
             }
 
             reader.close();
@@ -84,8 +75,13 @@ public class ServerImpl extends UnicastRemoteObject implements IServerImpl {
                 throw new RemoteException("Server RMI: il file contiene solo " + rowIndex + "righe, riga: " + rowToDelete + " inesistente!");
             }
 
-            file.delete();
-            tempOut.renameTo(file);
+            if(!file.delete()){
+                throw new RemoteException("Server RMI: salvataggio nuovo file non riuscito.");
+            }
+
+            if(!tempOut.renameTo(file)){
+                throw new RemoteException("Server RMI: salvataggio nuovo file non riuscito.");
+            }
 
             result[0] = filePath;
             result[1] = String.valueOf(rowIndex - 1);
