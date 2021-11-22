@@ -79,7 +79,7 @@ class Client {
                     }
 
                     try {
-                        String[] res = serverRMI.elimina_riga(fileName, rowToDelete + 1);
+                        String[] res = serverRMI.elimina_riga(fileName, rowToDelete);
                         System.out.println("Nome del file modificato: " + res[0]);
                         System.out.println("Nuove totale righe nel file: " + res[1]);
                     } catch (RemoteException e) {
