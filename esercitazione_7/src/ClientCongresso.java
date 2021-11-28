@@ -42,10 +42,12 @@ class ClientCongresso {
 		try {
 			String completeRemoteRegistryName = "//" + registryRemotoHost + ":"
 					+ registryRemotoPort + "/" + registryRemotoName;
-			RegistryRemotoClient registryRemoto = 
-					(RegistryRemotoClient) Naming.lookup(completeRemoteRegistryName);
+			RegistryRemotoTagClient registryRemoto = 
+					(RegistryRemotoTagClient) Naming.lookup(completeRemoteRegistryName);
 			ServerCongresso serverRMI = 
 					(ServerCongresso) registryRemoto.cerca(serviceName);
+				
+
 			System.out.println("ClientRMI: Servizio \"" + serviceName + "\" connesso");
 			
 			System.out.println("\nRichieste di servizio fino a fine file");
