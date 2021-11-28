@@ -1,6 +1,6 @@
 /**
  * ClientCongresso.java
- *
+ * Esercitazione 7 - Client
  */
 
 import java.io.BufferedReader;
