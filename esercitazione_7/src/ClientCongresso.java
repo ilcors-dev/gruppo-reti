@@ -15,7 +15,7 @@ class ClientCongresso {
 		int registryRemotoPort = 1099;
 		String registryRemotoHost = null;
 		String registryRemotoName = "RegistryRemoto";
-		String serviceName = "ServerCongresso";
+		String serviceName = null;
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
 		// Controllo dei parametri della riga di comando
@@ -44,10 +44,45 @@ class ClientCongresso {
 					+ registryRemotoPort + "/" + registryRemotoName;
 			RegistryRemotoTagClient registryRemoto = 
 					(RegistryRemotoTagClient) Naming.lookup(completeRemoteRegistryName);
-			ServerCongresso serverRMI = 
-					(ServerCongresso) registryRemoto.cerca(serviceName);
-				
 
+			ServerCongresso serverRMI = null;
+
+			while(serverRMI == null) {
+				System.out.print("Ricerca tramite [1] nome o [2] tag? ");
+				String input = stdIn.readLine();
+				int choice = -1;
+				try {
+					 choice = Integer.parseInt(input);
+				} catch (NumberFormatException e) {
+					System.err.println("Formato input non corretto: inserire solamente 1 o 2.");
+				}
+				switch (choice) {
+					case 1: 
+						System.out.print("Inserire nome del servizio: ");
+						serviceName = stdIn.readLine().trim();
+						serverRMI = (ServerCongresso) registryRemoto.cerca(serviceName); //Gestire remoteException
+						break;
+					case 2:
+						System.out.print("Inserisci nome del tag: ");
+						serviceName = stdIn.readLine().trim();
+						String[] serviceList = registryRemoto.cercaTag(Tag.valueOf(serviceName)); //valueOf ?!?
+						if (serviceList.length == 0) {
+							System.err.println("Nessun servizio associato a questo tag");
+						} else {
+							while (serviceName == null) {
+								for (int count = 0; count < serviceList.length; count++) {
+									System.out.println(count+1+". "+" "+serviceList[count]);
+								}
+								System.out.print("Inserire indice servizio a cui collegarsi: ");
+							}			
+						}
+						break;
+					default: 
+						System.out.println("Modalità di ricerca non gestita");
+					break;
+				}
+			}
+				
 			System.out.println("ClientRMI: Servizio \"" + serviceName + "\" connesso");
 			
 			System.out.println("\nRichieste di servizio fino a fine file");
