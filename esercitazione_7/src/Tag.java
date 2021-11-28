@@ -8,4 +8,5 @@ public enum Tag {
         this.textTag = textTag;
         this.val = val;
     }
+    
 }

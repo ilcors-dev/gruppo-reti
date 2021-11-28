@@ -7,14 +7,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
 
-class ClientCongresso {
+class ClientRMI {
 
   // Avvio del Client RMI
 	public static void main(String[] args) {
 		int registryRemotoPort = 1099;
 		String registryRemotoHost = null;
-		String registryRemotoName = "RegistryRemoto";
+		String registryRemotoName = "RegistryRemotoTag";
 		String serviceName = null;
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
@@ -55,12 +56,18 @@ class ClientCongresso {
 					 choice = Integer.parseInt(input);
 				} catch (NumberFormatException e) {
 					System.err.println("Formato input non corretto: inserire solamente 1 o 2.");
+					continue;
 				}
 				switch (choice) {
 					case 1: 
 						System.out.print("Inserire nome del servizio: ");
 						serviceName = stdIn.readLine().trim();
-						serverRMI = (ServerCongresso) registryRemoto.cerca(serviceName); //Gestire remoteException
+						try {
+							serverRMI = (ServerCongresso) registryRemoto.cerca(serviceName);
+						} catch(RemoteException e) {
+							System.err.println(e.getMessage());
+							continue;
+						}
 						break;
 					case 2:
 						System.out.print("Inserisci nome del tag: ");
@@ -68,13 +75,32 @@ class ClientCongresso {
 						String[] serviceList = registryRemoto.cercaTag(Tag.valueOf(serviceName)); //valueOf ?!?
 						if (serviceList.length == 0) {
 							System.err.println("Nessun servizio associato a questo tag");
+							continue;
 						} else {
 							while (serviceName == null) {
 								for (int count = 0; count < serviceList.length; count++) {
-									System.out.println(count+1+". "+" "+serviceList[count]);
+									System.out.println(count+". "+" "+serviceList[count]);
 								}
 								System.out.print("Inserire indice servizio a cui collegarsi: ");
-							}			
+								int sel = -1;
+								try {
+									sel =  Integer.parseInt(stdIn.readLine().trim());
+								} catch (NumberFormatException e) {
+									System.err.println("Formato input non corretto per selezione servizio");
+									continue;
+								}
+								if (sel < 0 || sel > (serviceList.length-1)) {
+									System.err.println("Selettore fuori renge: inserire valori da 0 a"+(serviceList.length-1));
+									continue;
+								}
+								serviceName = serviceList[sel];			
+							}
+							try {
+								serverRMI = (ServerCongresso) registryRemoto.cerca(serviceName);
+							} catch(RemoteException e) {
+								System.err.println(e.getMessage());
+								continue;
+							}		
 						}
 						break;
 					default: 
