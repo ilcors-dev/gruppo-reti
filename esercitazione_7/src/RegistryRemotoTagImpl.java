@@ -7,17 +7,17 @@ import java.rmi.server.UnicastRemoteObject;
 public class RegistryRemotoTagImpl extends UnicastRemoteObject implements
         RegistryRemotoTagServer{
 
-    // num. entry [nomelogico][ref]
     final int tableSize = 100;
 
     // Tabella: la prima colonna contiene i nomi, la seconda i riferimenti remoti
-    Object[][] table = new Object[tableSize][2];
+    Object[][] table = new Object[tableSize][3];
 
     public RegistryRemotoTagImpl() throws RemoteException {
         super();
         for (int i = 0; i < tableSize; i++) {
             table[i][0] = null;
             table[i][1] = null;
+            table[i][2] = null;
         }
     }
 
@@ -92,6 +92,7 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements
             if ( nomeLogico.equals((String) table[i][0]) ) {
                 table[i][0] = null;
                 table[i][1] = null;
+                table[i][2] = null;
                 risultato = true;
                 break;
             }
@@ -108,16 +109,54 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements
                     risultato = true;
                 table[i][0] = null;
                 table[i][1] = null;
+                table[i][2] = null;
             }
         return risultato;
     }
+
+    @Override
+    public synchronized String[] cercaTag(Tag tag) throws RemoteException {
+        if(tag==null ) throw new RemoteException("il tag ha valore null");
+
+        int count = 0;
+        for(int i=0; i<this.tableSize; i++) {
+            if(this.table[i][2] != null && this.table[i][2].equals(tag)) {
+                count++;
+            }
+        }
+        String[] nomiServizi = new String[count];
+        count = 0;
+        for(int i=0; i<this.tableSize; i++) {
+            if(this.table[i][2] != null && this.table[i][2].equals(tag)) {
+                nomiServizi[count++] = (String) this.table[i][0];
+            }
+        }
+
+        return nomiServizi;
+    }
+
+    @Override
+    public synchronized boolean associaTag(String nome_logico_server, Tag tag) throws RemoteException {
+        if(tag == null || nome_logico_server == null) throw new RemoteException("il tag o il nome logico sono null");
+
+        int count = 0;
+        for (int i=0; i<this.tableSize; i++) {
+            if (this.table[i][0] != null && this.table[i][0].equals(nome_logico_server)) {
+                this.table[i][2] = tag;
+                count++;
+            }
+        }
+        System.out.println("Cambiati i tag di "+count+" record di tipo "+nome_logico_server);
+        return count > 0;
+    }
+
 
     // Avvio del Server RMI
     public static void main(String[] args) {
 
         int registryRemotoPort = 1099;
         String registryRemotoHost = "localhost";
-        String registryRemotoName = "RegistryRemoto";
+        String registryRemotoName = "RegistryRemotoTag";
 
         // Controllo dei parametri della riga di comando
         if (args.length != 0 && args.length != 1) {
@@ -154,13 +193,5 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements
         }
     }
 
-    @Override
-    public String[] cercaTag(Tag tag) throws RemoteException {
-        return new String[0];
-    }
 
-    @Override
-    public boolean associaTag(String nome_logico_server, Tag tag) throws RemoteException {
-        return false;
-    }
 }
