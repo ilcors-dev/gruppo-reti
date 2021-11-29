@@ -10,45 +10,17 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class ServerEchoImpl extends UnicastRemoteObject implements
     ServerEcho {
-  static Programma prog[];
 
   // Costruttore
   public ServerEchoImpl() throws RemoteException {
     super();
   }
 
-  // Richiede una prenotazione
-  public int registrazione(int giorno, String sessione, String speaker)
-      throws RemoteException {
-    int numSess = -1;
-    System.out.println("Server RMI: richiesta registrazione con parametri");
-    System.out.println("giorno   = " + giorno);
-    System.out.println("sessione = " + sessione);
-    System.out.println("speaker  = " + speaker);
-
-    if (sessione.startsWith("S")) {
-      try {
-        numSess = Integer.parseInt(sessione.substring(1)) - 1;
-      } catch (NumberFormatException e) {
-      }
-    }
-
-    // Se i dati sono sbagliati significa che sono stati trasmessi male e quindi
-    // solleva una eccezione
-    if (numSess == -1)
-      throw new RemoteException();
-    if (giorno < 1 || giorno > 3)
-      throw new RemoteException();
-
-    return prog[giorno - 1].registra(numSess, speaker);
+  @Override
+  public String message(String msg) throws RemoteException {
+    return msg.toUpperCase();
   }
-
-  // Ritorno il campo
-  public Programma programma(int giorno) throws RemoteException {
-    System.out.println("Server RMI: richiesto programma del giorno " + giorno);
-    return prog[giorno - 1];
-  }
-
+  
   // Avvio del Server RMI
   public static void main(String[] args) {
 
@@ -98,9 +70,5 @@ public class ServerEchoImpl extends UnicastRemoteObject implements
     }
   }
 
-  @Override
-  public String message(String msg) throws RemoteException {
-    // TODO Auto-generated method stub
-    return msg.toUpperCase();
-  }
+ 
 }
