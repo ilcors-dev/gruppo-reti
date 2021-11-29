@@ -206,7 +206,11 @@ class Client {
 					System.out.print("Servizio (R=Registrazione, P=Programma del congresso): ");
 				} // !EOF richieste utente
 			} else if (serverRMIEcho != null) {
-				
+				System.out.print("Inserisci messaggio da inoltrare al server: ");
+				while ((service = stdIn.readLine()) != null) {
+					String result = serverRMIEcho.message(service);
+					System.out.println("Risposta dal server: "+result);
+				}
 			}		
 
 		} catch (Exception e) {
