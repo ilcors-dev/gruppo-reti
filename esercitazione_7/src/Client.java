@@ -21,7 +21,7 @@ class Client {
 
 		// Controllo dei parametri della riga di comando
 		if (args.length != 1 && args.length != 2) {
-			System.out.println("Sintassi: ClientCongresso NomeHostRegistryRemoto [registryPort], registryPort intero");
+			System.out.println("Sintassi: Client NomeHostRegistryRemoto [registryPort], registryPort intero");
 			System.exit(1);
 		}
 		registryRemotoHost = args[0];
@@ -30,7 +30,7 @@ class Client {
 				registryRemotoPort = Integer.parseInt(args[1]);
 			} catch (Exception e) {
 				System.out
-					.println("Sintassi: ClientCongresso NomeHostRegistryRemoto [registryPort], registryPort intero");
+					.println("Sintassi: Client NomeHostRegistryRemoto [registryPort], registryPort intero");
 				System.exit(1);
 			}
 		}
@@ -46,6 +46,8 @@ class Client {
 			RegistryRemotoTagClient registryRemoto = 
 					(RegistryRemotoTagClient) Naming.lookup(completeRemoteRegistryName);
 
+
+		//Tipologie di servizio offerte al client
 			ServerCongresso serverRMICongresso = null;
 			ServerEcho serverRMIEcho = null;
 
@@ -53,7 +55,7 @@ class Client {
 				System.out.print("Ricerca tramite 1 [Nome] o 2 [Tag]? ");
 				int choice = -1;
 				try {
-					 choice = Integer.parseInt(stdIn.readLine().trim());
+					 choice = Integer.parseInt(stdIn.readLine().trim()); 
 				} catch (NumberFormatException e) {
 					System.err.println("Formato input non corretto: inserire solamente 1 [Nome] o 2 [Tag].");
 					continue;
@@ -61,68 +63,75 @@ class Client {
 				switch (choice) {
 					case 1: 
 						System.out.print("Inserire nome del servizio: ");
-						serviceName = stdIn.readLine().trim();
+						while ((serviceName = stdIn.readLine().trim()) == null) {				
 						try {
 							if (serviceName.equals("ServerCongresso")) {
 								serverRMICongresso = (ServerCongresso) registryRemoto.cerca(serviceName);
 							} else if (serviceName.equals("ServerEcho")) {
 								serverRMIEcho =  (ServerEcho) registryRemoto.cerca(serviceName);
-							}
-							
+							} else {
+								System.err.println("Servizio attualmente non gestito.");
+								System.out.print("Inserire nome del servizio: ");
+								continue;
+								
+							}	
 						} catch(RemoteException e) {
 							System.err.println(e.getMessage());
 							continue;
 						}
+					}
 					break;
 					case 2:
 						System.out.print("Inserisci nome del tag: ");
-						String nomeTag =stdIn.readLine().trim();
-						String[] serviceList = null;
-						Tag currentTag = null;
-						if (nomeTag.equals("ECHO")) {
-							serviceList = registryRemoto.cercaTag(Tag.ECHO);
-							currentTag = Tag.ECHO;
-						} else if (nomeTag.equals("CONGRESSO")) {
-							serviceList = registryRemoto.cercaTag(Tag.ECHO);
-							currentTag = Tag.CONGRESSO;
-						}
-						if (serviceList.length == 0) {
-							System.err.println("Nessun servizio associato a questo tag");
-							continue;
-						} else {
-							while (serviceName == null) {
-								for (int count = 0; count < serviceList.length; count++) {
-									System.out.println(count+". "+" "+serviceList[count]);
-								}
-								System.out.print("Inserire indice servizio a cui collegarsi: ");
-								int sel = -1;
-								try {
-									sel =  Integer.parseInt(stdIn.readLine().trim());
-								} catch (NumberFormatException e) {
-									System.err.println("Formato input non corretto per selezione servizio");
-									continue;
-								}
-								if (sel < 0 || sel > (serviceList.length-1)) {
-									System.err.println("Selettore fuori renge: inserire valori da 0 a"+(serviceList.length-1));
-									continue;
-								}
-								serviceName = serviceList[sel];			
+						String nomeTag = null;
+						while ((nomeTag = stdIn.readLine().trim()) == null) {
+							String[] serviceList = null;
+							Tag currentTag = null;
+							if (nomeTag.equals("ECHO")) {
+								serviceList = registryRemoto.cercaTag(Tag.ECHO);
+								currentTag = Tag.ECHO;
+							} else if (nomeTag.equals("CONGRESSO")) {
+								serviceList = registryRemoto.cercaTag(Tag.CONGRESSO);
+								currentTag = Tag.CONGRESSO;
 							}
-							try {
-								if (currentTag == Tag.CONGRESSO) {
-									serverRMICongresso = (ServerCongresso) registryRemoto.cerca(serviceName);
-								} else if (currentTag == Tag.ECHO) {
-									serverRMIEcho = (ServerEcho) registryRemoto.cerca(serviceName);
-								}
-								
-							} catch(RemoteException e) {
-								System.err.println(e.getMessage());
+							if (serviceList.length == 0) {
+								System.err.println("Nessun servizio associato a questo tag");
+								System.out.print("Inserisci nome del tag: ");
 								continue;
-							}		
-						}
-						break;
+							} else {
+								while (serviceName == null) {
+									for (int count = 0; count < serviceList.length; count++) {
+										System.out.println(count+". "+" "+serviceList[count]);
+									}
+									System.out.print("Inserire indice servizio a cui collegarsi: ");
+									int sel = -1;
+									try {
+										sel =  Integer.parseInt(stdIn.readLine().trim());
+									} catch (NumberFormatException e) {
+										System.err.println("Formato input non corretto per selezione servizio");
+										continue;
+									}
+									if (sel < 0 || sel > (serviceList.length-1)) {
+										System.err.println("Selettore fuori range: inserire valori da 0 a"+(serviceList.length-1));
+										continue;
+									}
+									serviceName = serviceList[sel];			
+								}
+								try {
+									if (currentTag == Tag.CONGRESSO) {
+										serverRMICongresso = (ServerCongresso) registryRemoto.cerca(serviceName);
+									} else if (currentTag == Tag.ECHO) {
+										serverRMIEcho = (ServerEcho) registryRemoto.cerca(serviceName);
+									}	
+								} catch(RemoteException e) {
+									System.err.println(e.getMessage());
+									continue;
+								}		
+							}
+						}						
+					break;
 					default: 
-						System.out.println("Modalità di ricerca non gestita");
+						System.err.println("Modalità di ricerca non gestita");
 					break;
 				}
 			}
@@ -132,9 +141,10 @@ class Client {
 			System.out.println("\nRichieste di servizio fino a fine file");
 			
 			String service;
-			System.out.print("Servizio (R=Registrazione, P=Programma del congresso): ");
+			
 			
 			if (serverRMICongresso != null) {
+				System.out.print("Servizio (R=Registrazione, P=Programma del congresso): ");
 				while ((service = stdIn.readLine()) != null) {
 				
 					if (service.equals("R")) {
