@@ -52,10 +52,6 @@ public class ServerEchoImpl extends UnicastRemoteObject implements
   // Avvio del Server RMI
   public static void main(String[] args) {
 
-    // creazione programma
-    prog = new Programma[3];
-    for (int i = 0; i < 3; i++)
-      prog[i] = new Programma();
     int registryRemotoPort = 1099;
     String registryRemotoName = "RegistryRemotoTag";
     String serviceName = "ServerEcho";
@@ -63,7 +59,7 @@ public class ServerEchoImpl extends UnicastRemoteObject implements
     // Controllo dei parametri della riga di comando
     if (args.length != 1 && args.length != 2) {
       System.out
-          .println("Sintassi: ServerCongressoImpl NomeHostRegistryRemoto [registryPort], registryPort intero");
+          .println("Sintassi: ServerEchoImpl NomeHostRegistryRemoto [registryPort], registryPort intero");
       System.exit(1);
     }
     String registryRemotoHost = args[0];
@@ -72,7 +68,7 @@ public class ServerEchoImpl extends UnicastRemoteObject implements
         registryRemotoPort = Integer.parseInt(args[1]);
       } catch (Exception e) {
         System.out
-            .println("Sintassi: ServerCongressoImpl NomeHostRegistryRemoto [registryPort], registryPort intero");
+            .println("Sintassi: ServerEchoImpl NomeHostRegistryRemoto [registryPort], registryPort intero");
         System.exit(2);
       }
     }
@@ -105,6 +101,6 @@ public class ServerEchoImpl extends UnicastRemoteObject implements
   @Override
   public String message(String msg) throws RemoteException {
     // TODO Auto-generated method stub
-    return null;
+    return msg.toUpperCase();
   }
 }
