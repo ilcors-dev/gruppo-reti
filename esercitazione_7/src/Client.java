@@ -63,7 +63,11 @@ class Client {
 				switch (choice) {
 					case 1: 
 						System.out.print("Inserire nome del servizio: ");
-						while ((serviceName = stdIn.readLine().trim()) == null) {				
+						serviceName = stdIn.readLine().trim();	
+						if (serviceName == null) {
+							System.err.println("Nessun nome del servizio inserito.");
+							continue;
+						}		
 						try {
 							if (serviceName.equals("ServerCongresso")) {
 								serverRMICongresso = (ServerCongresso) registryRemoto.cerca(serviceName);
@@ -71,20 +75,23 @@ class Client {
 								serverRMIEcho =  (ServerEcho) registryRemoto.cerca(serviceName);
 							} else {
 								System.err.println("Servizio attualmente non gestito.");
-								System.out.print("Inserire nome del servizio: ");
 								continue;
 								
 							}	
 						} catch(RemoteException e) {
 							System.err.println(e.getMessage());
 							continue;
-						}
-					}
+						}			
 					break;
 					case 2:
 						System.out.print("Inserisci nome del tag: ");
-						String nomeTag = null;
-						while ((nomeTag = stdIn.readLine().trim()) == null) {
+						String nomeTag = stdIn.readLine().trim();
+						if (nomeTag == null) {
+							
+								System.err.println("Nessun tag del servizio inserito.");
+								continue;
+						
+						}
 							String[] serviceList = null;
 							Tag currentTag = null;
 							if (nomeTag.equals("ECHO")) {
@@ -94,9 +101,8 @@ class Client {
 								serviceList = registryRemoto.cercaTag(Tag.CONGRESSO);
 								currentTag = Tag.CONGRESSO;
 							}
-							if (serviceList.length == 0) {
+							if (serviceList.length == 0 || serviceList == null) {
 								System.err.println("Nessun servizio associato a questo tag");
-								System.out.print("Inserisci nome del tag: ");
 								continue;
 							} else {
 								while (serviceName == null) {
@@ -127,8 +133,7 @@ class Client {
 									System.err.println(e.getMessage());
 									continue;
 								}		
-							}
-						}						
+							}					
 					break;
 					default: 
 						System.err.println("Modalità di ricerca non gestita");
