@@ -57,7 +57,7 @@ public class ServerEchoImpl extends UnicastRemoteObject implements
     try {
       RegistryRemotoTagServer registryRemoto = (RegistryRemotoTagServer) Naming
           .lookup(completeRemoteRegistryName);
-      ServerCongressoImpl serverRMI = new ServerCongressoImpl();
+      ServerEchoImpl serverRMI = new ServerEchoImpl();
       registryRemoto.aggiungi(serviceName, serverRMI);
       System.out.println("Server RMI: Servizio \"" + serviceName
           + "\" registrato");
