@@ -181,7 +181,7 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements
         String completeName = "//" + registryRemotoHost + ":" + registryRemotoPort
                 + "/" + registryRemotoName;
         try {
-            RegistryRemotoImpl serverRMI = new RegistryRemotoImpl();
+            RegistryRemotoTagImpl serverRMI = new RegistryRemotoTagImpl();
             Naming.rebind(completeName, serverRMI);
             System.out.println("Server RMI: Servizio \"" + registryRemotoName
                     + "\" registrato");
