@@ -1,5 +1,5 @@
 public enum Tag {
-    TIPO1("tipo 1",1), TIPO2("tipo 2",2);
+    ECHO("ECHO",1), CONGRESSO("CONGRESSO",2);
 
     private final String textTag;
     private final int val;

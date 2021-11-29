@@ -8,12 +8,12 @@ import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServerCongressoImpl extends UnicastRemoteObject implements
-    ServerCongresso {
+public class ServerEchoImpl extends UnicastRemoteObject implements
+    ServerEcho {
   static Programma prog[];
 
   // Costruttore
-  public ServerCongressoImpl() throws RemoteException {
+  public ServerEchoImpl() throws RemoteException {
     super();
   }
 
@@ -58,7 +58,7 @@ public class ServerCongressoImpl extends UnicastRemoteObject implements
       prog[i] = new Programma();
     int registryRemotoPort = 1099;
     String registryRemotoName = "RegistryRemotoTag";
-    String serviceName = "ServerCongresso";
+    String serviceName = "ServerEcho";
 
     // Controllo dei parametri della riga di comando
     if (args.length != 1 && args.length != 2) {
@@ -89,16 +89,22 @@ public class ServerCongressoImpl extends UnicastRemoteObject implements
     try {
       RegistryRemotoTagServer registryRemoto = (RegistryRemotoTagServer) Naming
           .lookup(completeRemoteRegistryName);
-      ServerEchoImpl serverRMI = new ServerEchoImpl();
+      ServerCongressoImpl serverRMI = new ServerCongressoImpl();
       registryRemoto.aggiungi(serviceName, serverRMI);
       System.out.println("Server RMI: Servizio \"" + serviceName
           + "\" registrato");
-      registryRemoto.associaTag(serviceName, Tag.CONGRESSO);
+      registryRemoto.associaTag(serviceName, Tag.ECHO);
     } catch (Exception e) {
       System.err.println("Server RMI \"" + serviceName + "\": "
           + e.getMessage());
       e.printStackTrace();
       System.exit(1);
     }
+  }
+
+  @Override
+  public String message(String msg) throws RemoteException {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
