@@ -139,15 +139,14 @@ public class RegistryRemotoTagImpl extends UnicastRemoteObject implements
     public synchronized boolean associaTag(String nome_logico_server, Tag tag) throws RemoteException {
         if(tag == null || nome_logico_server == null) throw new RemoteException("il tag o il nome logico sono null");
 
-        int count = 0;
         for (int i=0; i<this.tableSize; i++) {
             if (this.table[i][0] != null && this.table[i][0].equals(nome_logico_server)) {
                 this.table[i][2] = tag;
-                count++;
+                System.out.println("Cambiato il tag del servizio : "+nome_logico_server);
+                return true;
             }
         }
-        System.out.println("Cambiati i tag di "+count+" record di tipo "+nome_logico_server);
-        return count > 0;
+        return false;
     }
 
 
