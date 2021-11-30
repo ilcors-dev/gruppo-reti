@@ -8,5 +8,11 @@ public enum Tag {
         this.textTag = textTag;
         this.val = val;
     }
-    
+
+    public static boolean check(String textTag){
+        for (Tag itemTag: Tag.values()) {
+            if(itemTag.textTag.equals(textTag)) return true;
+        }
+        return false;
+    }
 }

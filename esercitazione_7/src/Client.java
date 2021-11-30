@@ -84,14 +84,15 @@ class Client {
 						}			
 					break;
 					case 2:
-						System.out.print("Inserisci nome del tag: ");
-						String nomeTag = stdIn.readLine().trim();
-						if (nomeTag == null) {
-							
+						String nomeTag;
+						do {
+							System.out.print("Inserisci nome del tag: ");
+							nomeTag = stdIn.readLine().trim();
+							if (nomeTag == null) {
 								System.err.println("Nessun tag del servizio inserito.");
-								continue;
-						
-						}
+							}
+						}while(!Tag.check(nomeTag));
+
 							String[] serviceList = null;
 							Tag currentTag = null;
 							if (nomeTag.equals("ECHO")) {
