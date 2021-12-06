@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
             gets(ok);
             printf("Stringa letta: %s\n", ok);
 
-            ris = conta_file_1(&input, clnt);
+            ris = dir_scan_1(&input, clnt);
 
             if (ris == (int *)NULL)
                 clnt_perror(clnt, "call failed");
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
             memset(fileName, 0, sizeof(fileName));
         } // CF
         printf("richieste servizio fino a fine file\n");
-        printf("operazioni: CS = Conta File maggiori di, C = Conta\n");
+        printf("operazioni: SD = Conta File maggiori di, SF = Conta\n");
     } //while
 
     clnt_destroy(clnt);
