@@ -1,5 +1,3 @@
-/* count_client.c */
-
 #include <stdio.h>
 #include <rpc/rpc.h>
 #include "scan.h"
@@ -12,7 +10,7 @@ int main(int argc, char *argv[])
     Output *out;
     char *server, *fileName;
     Input input;
-    char chars, ok[128];
+    char ok[128];
 
     input.directory = (char *)malloc(50);
     input.soglia = 0;
@@ -48,22 +46,10 @@ int main(int argc, char *argv[])
         // richiesta conteggio file nel directory remoto
         if (strcmp(ok, "SD") == 0)
         {
-            printf("inserisci il nome directory: \n");
+            printf("Inserisci il nome della directory: \n");
             gets(input.directory);
-            printf("inserisci la threshold: \n");
-            //controllo intero
-            while (scanf("%d", &input.soglia) != 1)
-            {
-                do
-                {
-                    chars = getchar();
-                    printf("%c ", chars);
-                } while (chars != '\n');
-                printf("Inserire int");
-                continue;
-            }
-            gets(ok);
-            printf("Stringa letta: %s\n", ok);
+            printf("Inserisci la soglia: \n");
+            scanf("%d", &input.soglia);
 
             ris = dir_scan_1(&input, clnt);
 
@@ -73,15 +59,14 @@ int main(int argc, char *argv[])
                 printf("E' avvenuto un errore lato server\n");
             else
                 printf("Ho contato %d file con dim >= %d!\n", *ris, input.soglia);
-        } // CS
-
+        }
         // richiesta conteggio characters nel file remoto
         else if (strcmp(ok, "SF") == 0)
         {
             printf("inserisci il nome del file: \n");
             gets(fileName);
             out = file_scan_1(&fileName, clnt);
-
+            
             if (out == (int *)NULL)
                 clnt_perror(clnt, "call failed");
             else if (out->errore == -1)
@@ -89,15 +74,12 @@ int main(int argc, char *argv[])
             else
                 printf("Ho contato %d characters, %d words e %d lines !\n",
                        out->caratteri, out->parole, out->linee);
-            //clean input buffer
-            memset(fileName, 0, sizeof(fileName));
-        } // CF
+        }
         printf("richieste servizio fino a fine file\n");
         printf("operazioni: SD = Conta File maggiori di, SF = Conta\n");
-    } //while
+    }
 
     clnt_destroy(clnt);
     free(input.directory);
     free(fileName);
-    printf("Esco dal client\n");
 }
