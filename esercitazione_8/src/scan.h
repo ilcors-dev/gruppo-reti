@@ -6,9 +6,12 @@
 #ifndef _SCAN_H_RPCGEN
 #define _SCAN_H_RPCGEN
 
-#define RPCGEN_VERSION	199506
-
 #include <rpc/rpc.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 struct Output {
@@ -18,55 +21,49 @@ struct Output {
 	int errore;
 };
 typedef struct Output Output;
-#ifdef __cplusplus
-extern "C" bool_t xdr_Output(XDR *, Output*);
-#elif __STDC__
-extern  bool_t xdr_Output(XDR *, Output*);
-#else /* Old Style C */
-bool_t xdr_Output();
-#endif /* Old Style C */
-
 
 struct Input {
 	char *directory;
 	int soglia;
 };
 typedef struct Input Input;
-#ifdef __cplusplus
-extern "C" bool_t xdr_Input(XDR *, Input*);
-#elif __STDC__
-extern  bool_t xdr_Input(XDR *, Input*);
-#else /* Old Style C */
-bool_t xdr_Input();
-#endif /* Old Style C */
 
+#define SCANPROGRAM 0x20000015
+#define SCANVERS 1
 
-#define SCANPROGRAM ((rpc_uint)0x20000015)
-#define SCANVERS ((rpc_uint)1)
-
-#ifdef __cplusplus
-#define file_scan ((rpc_uint)1)
-extern "C" Output * file_scan_1(char **, CLIENT *);
-extern "C" Output * file_scan_1_svc(char **, struct svc_req *);
-#define dir_scan ((rpc_uint)2)
-extern "C" int * dir_scan_1(Input *, CLIENT *);
-extern "C" int * dir_scan_1_svc(Input *, struct svc_req *);
-
-#elif __STDC__
-#define file_scan ((rpc_uint)1)
+#if defined(__STDC__) || defined(__cplusplus)
+#define file_scan 1
 extern  Output * file_scan_1(char **, CLIENT *);
 extern  Output * file_scan_1_svc(char **, struct svc_req *);
-#define dir_scan ((rpc_uint)2)
+#define dir_scan 2
 extern  int * dir_scan_1(Input *, CLIENT *);
 extern  int * dir_scan_1_svc(Input *, struct svc_req *);
+extern int scanprogram_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
-#else /* Old Style C */
-#define file_scan ((rpc_uint)1)
+#else /* K&R C */
+#define file_scan 1
 extern  Output * file_scan_1();
 extern  Output * file_scan_1_svc();
-#define dir_scan ((rpc_uint)2)
+#define dir_scan 2
 extern  int * dir_scan_1();
 extern  int * dir_scan_1_svc();
-#endif /* Old Style C */
+extern int scanprogram_1_freeresult ();
+#endif /* K&R C */
+
+/* the xdr functions */
+
+#if defined(__STDC__) || defined(__cplusplus)
+extern  bool_t xdr_Output (XDR *, Output*);
+extern  bool_t xdr_Input (XDR *, Input*);
+
+#else /* K&R C */
+extern bool_t xdr_Output ();
+extern bool_t xdr_Input ();
+
+#endif /* K&R C */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* !_SCAN_H_RPCGEN */

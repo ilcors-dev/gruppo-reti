@@ -31,11 +31,13 @@ Output *file_scan_1_svc(char **input, struct svc_req *rp)
 	else
 	{
 		result.errore = 0;
-		while ((nread = read(fd_file, &currentCar,1))>0)
+		while ((nread = read(fd_file, &currentCar, 1)) > 0)
 		{
 			result.caratteri = result.caratteri + 1;
-			if((currentCar == ' ' || currentCar == '\n') && precCar != ' ' && precCar != '\n') result.parole = result.parole + 1;
-			if(currentCar == '\n') result.linee = result.linee + 1;
+			if ((currentCar == ' ' || currentCar == '\n') && precCar != ' ' && precCar != '\n')
+				result.parole = result.parole + 1;
+			if (currentCar == '\n')
+				result.linee = result.linee + 1;
 		}
 		printf("Ho letto %d characters, %d words e %d lines\n", result.caratteri, result.parole, result.linee);
 		close(fd_file);
