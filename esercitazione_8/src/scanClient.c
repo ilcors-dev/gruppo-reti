@@ -51,6 +51,8 @@ int main(int argc, char *argv[])
             printf("Inserisci la soglia: \n");
             scanf("%d", &input.soglia);
 
+            gets(ok);
+
             ris = dir_scan_1(&input, clnt);
 
             if (ris == (int *)NULL)
@@ -66,7 +68,7 @@ int main(int argc, char *argv[])
             printf("inserisci il nome del file: \n");
             gets(fileName);
             out = file_scan_1(&fileName, clnt);
-            
+
             if (out == (int *)NULL)
                 clnt_perror(clnt, "call failed");
             else if (out->errore == -1)
