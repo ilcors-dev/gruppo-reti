@@ -38,6 +38,7 @@ Output *file_scan_1_svc(char **input, struct svc_req *rp)
 				result.parole = result.parole + 1;
 			if (currentCar == '\n')
 				result.linee = result.linee + 1;
+			precCar = currentCar;	
 		}
 		printf("Ho letto %d characters, %d words e %d lines\n", result.caratteri, result.parole, result.linee);
 		close(fd_file);
