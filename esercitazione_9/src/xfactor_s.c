@@ -11,11 +11,12 @@
 #define N 12 //3 concorrenti per giudice
 
 /*STATO INTERNO PRIVATO DEL SERVER*/
-typedef struct{
-	char* candidato;
-	char* giudice;
-	char categoria ;
-	char* nomeFile;
+typedef struct
+{
+	char *candidato;
+	char *giudice;
+	char categoria;
+	char *nomeFile;
 	char fase;
 	int voto;
 } Riga;
@@ -24,13 +25,15 @@ typedef struct{
 static Riga t[N];
 static int inizializzato = 0;
 
-
 /*Stato interno parzialmente implementato*/
-void inizializza(){
+void inizializza()
+{
 	int i;
-	if (inizializzato == 1) return;
+	if (inizializzato == 1)
+		return;
 
-	for (i = 0; i < N; i++){
+	for (i = 0; i < N; i++)
+	{
 
 		t[i].candidato = malloc(2);
 		strcpy(t[i].candidato, "L");
@@ -105,31 +108,37 @@ void inizializza(){
 }
 
 //implementazione delle procedure definite nel file XDR
-Output * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
+Output *classifica_giudici_1_svc(void *voidValue, struct svc_req *reqstp)
+{
 	Giudice listaGiudici[N];
 	static Output res;
-	int i, k, presente, ind=0, max, count =0;
+	int i, k, presente, ind = 0, max, count = 0;
 	inizializza();
 
 	// inizializzo listaGiudici
-	for(i=0; i<N; i++){
-		listaGiudici[i].nomeGiudice = malloc(strlen("L")+1);
+	for (i = 0; i < N; i++)
+	{
+		listaGiudici[i].nomeGiudice = malloc(strlen("L") + 1);
 		strcpy(listaGiudici[i].nomeGiudice, "L");
 		listaGiudici[i].punteggioTot = -1;
 	}
 
 	//
-	for (i=0; i < N; i++){
+	for (i = 0; i < N; i++)
+	{
 		presente = 0;
 
-		for(k=0; k<N; k++){
-			if(strcmp(listaGiudici[k].nomeGiudice, t[i].giudice)==0){
+		for (k = 0; k < N; k++)
+		{
+			if (strcmp(listaGiudici[k].nomeGiudice, t[i].giudice) == 0)
+			{
 				listaGiudici[k].punteggioTot = listaGiudici[k].punteggioTot + t[i].voto;
 				presente = 1;
-			} 
+			}
 		}
 
-		if(presente == 0){
+		if (presente == 0)
+		{
 			free(listaGiudici[ind].nomeGiudice);
 			listaGiudici[ind].nomeGiudice = malloc(strlen(t[i].giudice) + 1);
 			strcpy(listaGiudici[ind].nomeGiudice, t[i].giudice);
@@ -139,56 +148,65 @@ Output * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 	}
 
 	// inizializzo res
-	for(int i=0; i< N; i++) {
+	for (int i = 0; i < N; i++)
+	{
 		res.classificaGiudici[i].punteggioTot = -1;
-		res.classificaGiudici[i].nomeGiudice = malloc(strlen("L")+1);
+		res.classificaGiudici[i].nomeGiudice = malloc(strlen("L") + 1);
 		strcpy(res.classificaGiudici[i].nomeGiudice, "L");
 	}
 
 	// ordinamento
-	for(i=0; i<ind; i++){
-		for(k=0; k<ind; k++) {
-			if(res.classificaGiudici[i].punteggioTot < listaGiudici[k].punteggioTot){
+	for (i = 0; i < ind; i++)
+	{
+		for (k = 0; k < ind; k++)
+		{
+			if (res.classificaGiudici[i].punteggioTot < listaGiudici[k].punteggioTot)
+			{
 				res.classificaGiudici[i].nomeGiudice = malloc(strlen(listaGiudici[k].nomeGiudice) + 1);
 				strcpy(res.classificaGiudici[i].nomeGiudice, listaGiudici[k].nomeGiudice);
 				res.classificaGiudici[i].punteggioTot = listaGiudici[k].punteggioTot;
 				count = k;
 			}
 		}
-		listaGiudici[count].punteggioTot =-1;
+		listaGiudici[count].punteggioTot = -1;
 	}
 
 	return &res;
 }
 
-int * esprimi_voto_1_svc(Input* input, struct svc_req *reqstp){
+int *esprimi_voto_1_svc(Input *input, struct svc_req *reqstp)
+{
 	static int found;
 	found = -1;
 	int i, votoTot;
 
 	inizializza();
 
-	for (i = 0; i < N; i++){
+	for (i = 0; i < N; i++)
+	{
 
 		printf("VOTO: %s %s %d\n", t[i].candidato, input->nomeCandidato, t[i].voto);
 
-		if (strcmp(t[i].candidato, input->nomeCandidato) == 0){
-			if (input->tipoOp == 'A'){
+		if (strcmp(t[i].candidato, input->nomeCandidato) == 0)
+		{
+			if (input->tipoOp == 'A')
+			{
 				t[i].voto++;
 			}
 
-			if (input->tipoOp == 'S'){
+			if (input->tipoOp == 'S')
+			{
 				t[i].voto--;
 			}
 			printf("VOTO: %d\n", t[i].voto);
-			votoTot=t[i].voto;
+			votoTot = t[i].voto;
 			found = 0;
 			break;
 		}
 	}
-	if(found == 0)
-		printf ("Risultato: \n\t Cantante = %s \n\t Voti = %d\n", input->nomeCandidato, votoTot);
-	else 
+	if (found == 0)
+		printf("Risultato: \n\t Cantante = %s \n\t Voti = %d\n", input->nomeCandidato, votoTot);
+	else
 		printf("Problemi nell'attribuzione del voto, nome non trovato\n");
 
 	return (&found);
