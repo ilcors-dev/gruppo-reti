@@ -3,14 +3,14 @@
  * It was generated using rpcgen.
  */
 
-#include "xfactor.h"
+#include "fattorex.h"
 
 bool_t
 xdr_Giudice (XDR *xdrs, Giudice *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->nomeGiudice, 256))
+	 if (!xdr_string (xdrs, &objp->nomeGiudice, MAXLENGTHSTRING))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->punteggioTot))
 		 return FALSE;
@@ -18,23 +18,23 @@ xdr_Giudice (XDR *xdrs, Giudice *objp)
 }
 
 bool_t
-xdr_Output (XDR *xdrs, Output *objp)
+xdr_Classifica (XDR *xdrs, Classifica *objp)
 {
 	register int32_t *buf;
 
 	int i;
-	 if (!xdr_vector (xdrs, (char *)objp->classificaGiudici, 4,
+	 if (!xdr_vector (xdrs, (char *)objp->classificaGiudici, NUMGIUDICI,
 		sizeof (Giudice), (xdrproc_t) xdr_Giudice))
 		 return FALSE;
 	return TRUE;
 }
 
 bool_t
-xdr_Input (XDR *xdrs, Input *objp)
+xdr_Voto (XDR *xdrs, Voto *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->nomeCandidato, 256))
+	 if (!xdr_string (xdrs, &objp->nomeCandidato, MAXLENGTHSTRING))
 		 return FALSE;
 	 if (!xdr_char (xdrs, &objp->tipoOp))
 		 return FALSE;

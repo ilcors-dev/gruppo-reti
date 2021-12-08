@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "xfactor.h"
+#include "fattorex.h"
 
-#define N 12 //3 concorrenti per giudice
+#define N 9 //3 concorrenti per giudice
 
 /*STATO INTERNO PRIVATO DEL SERVER*/
 typedef struct{
@@ -26,7 +26,7 @@ static int inizializzato = 0;
 
 
 /*Stato interno parzialmente implementato*/
-void inizializza(){
+void setupTabella(){
 	int i;
 	if (inizializzato == 1) return;
 
@@ -105,11 +105,11 @@ void inizializza(){
 }
 
 //implementazione delle procedure definite nel file XDR
-Output * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
+Classifica * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 	Giudice listaGiudici[N];
-	static Output res;
+	static Classifica res;
 	int i, k, presente, ind=0, max, count =0;
-	inizializza();
+	setupTabella();
 
 	// inizializzo listaGiudici
 	for(i=0; i<N; i++){
@@ -161,23 +161,23 @@ Output * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 	return &res;
 }
 
-int * esprimi_voto_1_svc(Input* input, struct svc_req *reqstp){
+int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
 	static int found;
 	found = -1;
 	int i, votoTot;
 
-	inizializza();
+	setupTabella();
 
 	for (i = 0; i < N; i++){
 
-		printf("VOTO: %s %s %d\n", t[i].candidato, input->nomeCandidato, t[i].voto);
+		printf("VOTO: %s %s %d\n", t[i].candidato, votazione->nomeCandidato, t[i].voto);
 
-		if (strcmp(t[i].candidato, input->nomeCandidato) == 0){
-			if (input->tipoOp == 'A'){
+		if (strcmp(t[i].candidato, votazione->nomeCandidato) == 0){
+			if (votazione->tipoOp == 'A'){
 				t[i].voto++;
 			}
 
-			if (input->tipoOp == 'S'){
+			if (votazione->tipoOp == 'S'){
 				t[i].voto--;
 			}
 			printf("VOTO: %d\n", t[i].voto);
@@ -187,7 +187,7 @@ int * esprimi_voto_1_svc(Input* input, struct svc_req *reqstp){
 		}
 	}
 	if(found == 0)
-		printf ("Risultato: \n\t Cantante = %s \n\t Voti = %d\n", input->nomeCandidato, votoTot);
+		printf ("Risultato: \n\t Cantante = %s \n\t Voti = %d\n", votazione->nomeCandidato, votoTot);
 	else 
 		printf("Problemi nell'attribuzione del voto, nome non trovato\n");
 

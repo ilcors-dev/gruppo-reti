@@ -3,7 +3,7 @@
  * It was generated using rpcgen.
  */
 
-#include "xfactor.h"
+#include "fattorex.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <rpc/pmap_clnt.h>
@@ -17,10 +17,10 @@
 #endif
 
 static void
-operation_1(struct svc_req *rqstp, register SVCXPRT *transp)
+votafattorex_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		Input esprimi_voto_1_arg;
+		Voto esprimi_voto_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -33,12 +33,12 @@ operation_1(struct svc_req *rqstp, register SVCXPRT *transp)
 
 	case CLASSIFICA_GIUDICI:
 		_xdr_argument = (xdrproc_t) xdr_void;
-		_xdr_result = (xdrproc_t) xdr_Output;
+		_xdr_result = (xdrproc_t) xdr_Classifica;
 		local = (char *(*)(char *, struct svc_req *)) classifica_giudici_1_svc;
 		break;
 
 	case ESPRIMI_VOTO:
-		_xdr_argument = (xdrproc_t) xdr_Input;
+		_xdr_argument = (xdrproc_t) xdr_Voto;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) esprimi_voto_1_svc;
 		break;
@@ -68,15 +68,15 @@ main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
 
-	pmap_unset (OPERATION, OPERATIONVERS);
+	pmap_unset (VOTAFATTOREX, VOTAFATTOREXVERS);
 
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create udp service.");
 		exit(1);
 	}
-	if (!svc_register(transp, OPERATION, OPERATIONVERS, operation_1, IPPROTO_UDP)) {
-		fprintf (stderr, "%s", "unable to register (OPERATION, OPERATIONVERS, udp).");
+	if (!svc_register(transp, VOTAFATTOREX, VOTAFATTOREXVERS, votafattorex_1, IPPROTO_UDP)) {
+		fprintf (stderr, "%s", "unable to register (VOTAFATTOREX, VOTAFATTOREXVERS, udp).");
 		exit(1);
 	}
 
@@ -85,8 +85,8 @@ main (int argc, char **argv)
 		fprintf (stderr, "%s", "cannot create tcp service.");
 		exit(1);
 	}
-	if (!svc_register(transp, OPERATION, OPERATIONVERS, operation_1, IPPROTO_TCP)) {
-		fprintf (stderr, "%s", "unable to register (OPERATION, OPERATIONVERS, tcp).");
+	if (!svc_register(transp, VOTAFATTOREX, VOTAFATTOREXVERS, votafattorex_1, IPPROTO_TCP)) {
+		fprintf (stderr, "%s", "unable to register (VOTAFATTOREX, VOTAFATTOREXVERS, tcp).");
 		exit(1);
 	}
 

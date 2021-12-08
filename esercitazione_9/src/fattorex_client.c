@@ -1,15 +1,11 @@
-/*
- * xfactor_c.c
- */
-
 #include <rpc/rpc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "xfactor.h"
+#include "fattorex.h"
 
 #define DIM 256
-#define N 4	//numero giudici
+#define N 3	//numero giudici
 
 int main (int argc, char *argv[])
 {
@@ -18,16 +14,16 @@ int main (int argc, char *argv[])
 
 	int i, *ris, numVoti=-1;
   	char c;
-  	Output *classificaGiudici;
+  	Classifica *classificaGiudici;
 	void *voidValue;
 
   	//per leggere stringhe da standard di input
   	char ok[DIM];
-	Input * input;
+	Voto * votazione;
 
 	printf("ciao --------------------------\n");
-	input = malloc(sizeof(Input));
-	input->nomeCandidato = (char*)malloc(DIM);
+	votazione = malloc(sizeof(Voto));
+	votazione->nomeCandidato = (char*)malloc(DIM);
 	printf("ciao --------------------------ciao\n");
 
   /****************************************************************************************************************/
@@ -40,7 +36,7 @@ int main (int argc, char *argv[])
   	host = argv[1];
 
 	//Creazione gestore del trasporto
-	cl = clnt_create (host, OPERATION, OPERATIONVERS, "udp");
+	cl = clnt_create (host, VOTAFATTOREX, VOTAFATTOREXVERS, "udp");
 	if (cl == NULL){
 		clnt_pcreateerror (host);
 		exit (1);
@@ -74,14 +70,14 @@ int main (int argc, char *argv[])
 
 		else if( strcmp(ok,"2")==0 ){
 			printf("\nInserisci il nome del candidato: \n");
-			scanf("%s", input->nomeCandidato);
+			scanf("%s", votazione->nomeCandidato);
 			getchar();
 
 			printf("\nInserisci tipo di operazione (A (addiziona) oppure (S) sottrai ): \n");
-			scanf("%c", &input->tipoOp);
+			scanf("%c", &votazione->tipoOp);
 
 			// Invocazione remota
-			ris = esprimi_voto_1(input, cl);
+			ris = esprimi_voto_1(votazione, cl);
 
 			//Controllo del risultato
 			if(ris == NULL){
