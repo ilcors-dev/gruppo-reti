@@ -21,19 +21,15 @@ int main (int argc, char *argv[])
   	char ok[DIM];
 	Voto * votazione;
 
-	printf("ciao --------------------------\n");
-	votazione = malloc(sizeof(Voto));
-	votazione->nomeCandidato = (char*)malloc(DIM);
-	printf("ciao --------------------------ciao\n");
 
-  /****************************************************************************************************************/
-
-	//Controllo degli argomenti --> 2 di default...
-  	if (argc != 2){
+  	if (argc > 3){
     		printf ("usage: %s server_host\n", argv[0]);
     		exit (1);
   	}
-  	host = argv[1];
+  	host = (argc == 2) ? argv[1] : "localhost";
+
+	votazione = malloc(sizeof(Voto));
+	votazione->nomeCandidato = (char*)malloc(DIM);
 
 	//Creazione gestore del trasporto
 	cl = clnt_create (host, VOTAFATTOREX, VOTAFATTOREXVERS, "udp");
@@ -41,6 +37,8 @@ int main (int argc, char *argv[])
 		clnt_pcreateerror (host);
 		exit (1);
 	}
+	printf("Creazione del gestore di trasporto avvenuta con successo!\n");
+
 
 	//Interazione con l'utente
 	printf("Inserire:\n1\tClassifica Giudici\n2\tEsprimi voto\n^D\tper terminare: ");
