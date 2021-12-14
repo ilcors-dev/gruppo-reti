@@ -1,7 +1,3 @@
-/*
- * xfactor_s.c
- */
-
 #include <rpc/rpc.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,7 +6,6 @@
 
 #define NUMROWTABLE 6 //2 concorrenti per giudice
 
-/*STATO INTERNO PRIVATO DEL SERVER*/
 typedef struct{
 	char candidato[MAXLENGTHSTRING];
 	char giudice[MAXLENGTHSTRING];
@@ -20,12 +15,10 @@ typedef struct{
 	int voto;
 } Tupla;
 
-//variabili globali statiche
 static Tupla tabella[NUMROWTABLE];
 static int isSetupTabella = 0;
 
 
-/*Stato interno parzialmente implementato*/
 void setupTabella(){
 
 	strcpy(tabella[0].candidato, "Giuseppe");
