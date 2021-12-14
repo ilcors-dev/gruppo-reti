@@ -9,7 +9,7 @@
 int main (int argc, char *argv[])
 {
 	char *host, choice[DIMINPUTSTRING];
-	int *resault;
+	int *result;
 
   	CLIENT *gestoreTrasporto; //Gestore di trasporto
 
@@ -65,16 +65,16 @@ int main (int argc, char *argv[])
 			printf("\nInserisci tipo di operazione (A (addiziona) oppure (S) sottrai ): \n");
 			scanf("%c", &votazione->tipoOp);
 
-			resault = esprimi_voto_1(votazione, gestoreTrasporto);
+			result = esprimi_voto_1(votazione, gestoreTrasporto);
 
-			if(resault == NULL){
+			if(result == NULL){
 				clnt_perror(gestoreTrasporto, host);
 				exit(1);
 			}
 			printf("Invocazione esprimi_voto avvenuta con successo!\n");
-			if(*resault < 0)
+			if(*result < 0)
 				printf("Assegnazione del voto non riuscito: inserire nome candidato valido e operazione [A|S]\n");
-			else if(*resault == 0)
+			else if(*result == 0)
 				printf("Votazione registrata con successo\n");
 		} 
 		else

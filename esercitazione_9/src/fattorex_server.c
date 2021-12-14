@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "fattorex.h"
 
-#define N 6 //2 concorrenti per giudice
+#define NUMROWTABLE 6 //2 concorrenti per giudice
 
 /*STATO INTERNO PRIVATO DEL SERVER*/
 typedef struct{
@@ -21,7 +21,7 @@ typedef struct{
 } Tupla;
 
 //variabili globali statiche
-static Tupla tabella[N];
+static Tupla tabella[NUMROWTABLE];
 static int isSetupTabella = 0;
 
 
@@ -74,61 +74,57 @@ void setupTabella(){
 	printf("Terminata inizializzazione struttura dati!\n");
 }
 
-//implementazione delle procedure definite nel file XDR
 Classifica * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
-	Giudice listaGiudici[N];
-	static Classifica res;
-	int i, k, presente, ind=0, count =0;
+	Giudice listaGiudici[NUMGIUDICI];
+	static Classifica result;
+	int  inseritoLista, posLibera=0, count =0;
 	if (!isSetupTabella) setupTabella();
 
-	// inizializzo listaGiudici
-	for(i=0; i<N; i++){
-		listaGiudici[i].nomeGiudice = malloc(strlen("L")+1);
-		strcpy(listaGiudici[i].nomeGiudice, "L");
-		listaGiudici[i].punteggioTot = -1;
+	
+	for(int indiceGiudice =0; indiceGiudice<NUMGIUDICI; indiceGiudice++){ //inserimento valori default
+		listaGiudici[indiceGiudice].nomeGiudice = malloc(strlen("L")+1);
+		strcpy(listaGiudici[indiceGiudice].nomeGiudice, "L");
+		listaGiudici[indiceGiudice].punteggioTot = -1;
 	}
 
-	//
-	for (i=0; i < N; i++){
-		presente = 0;
+	for (int indiceTabella =0; indiceTabella < NUMROWTABLE; indiceTabella++){
+		inseritoLista = 0;
 
-		for(k=0; k<N; k++){
-			if(strcmp(listaGiudici[k].nomeGiudice, tabella[i].giudice)==0){
-				listaGiudici[k].punteggioTot = listaGiudici[k].punteggioTot + tabella[i].voto;
-				presente = 1;
+		for(int indiceGiudice=0; indiceGiudice<NUMGIUDICI; indiceGiudice++){
+			if(strcmp(listaGiudici[indiceGiudice].nomeGiudice, tabella[indiceTabella].giudice)==0){
+				listaGiudici[indiceGiudice].punteggioTot = listaGiudici[indiceGiudice].punteggioTot + tabella[indiceTabella].voto;
+				inseritoLista = 1;
 			} 
 		}
 
-		if(presente == 0){
-			free(listaGiudici[ind].nomeGiudice);
-			listaGiudici[ind].nomeGiudice = malloc(strlen(tabella[i].giudice) + 1);
-			strcpy(listaGiudici[ind].nomeGiudice, tabella[i].giudice);
-			listaGiudici[ind].punteggioTot = tabella[i].voto;
-			ind++;
+		if(!inseritoLista){
+			free(listaGiudici[posLibera].nomeGiudice); //rimuovo default
+			listaGiudici[posLibera].nomeGiudice = malloc(strlen(tabella[indiceTabella].giudice) + 1);
+			strcpy(listaGiudici[posLibera].nomeGiudice, tabella[indiceTabella].giudice);
+			listaGiudici[posLibera].punteggioTot = tabella[indiceTabella].voto;
+			posLibera++;
 		}
 	}
 
-	// inizializzo res
-	for(int i=0; i< N; i++) {
-		res.classificaGiudici[i].punteggioTot = -1;
-		res.classificaGiudici[i].nomeGiudice = malloc(strlen("L")+1);
-		strcpy(res.classificaGiudici[i].nomeGiudice, "L");
+	for(int indiceGiudice =0; indiceGiudice< NUMGIUDICI; indiceGiudice++) {
+		result.classificaGiudici[indiceGiudice].punteggioTot = -1;
+		result.classificaGiudici[indiceGiudice].nomeGiudice = malloc(strlen("L")+1);
+		strcpy(result.classificaGiudici[indiceGiudice].nomeGiudice, "L");
 	}
 
-	// ordinamento
-	for(i=0; i<ind; i++){
-		for(k=0; k<ind; k++) {
-			if(res.classificaGiudici[i].punteggioTot < listaGiudici[k].punteggioTot){
-				res.classificaGiudici[i].nomeGiudice = malloc(strlen(listaGiudici[k].nomeGiudice) + 1);
-				strcpy(res.classificaGiudici[i].nomeGiudice, listaGiudici[k].nomeGiudice);
-				res.classificaGiudici[i].punteggioTot = listaGiudici[k].punteggioTot;
+	for(int i=0; i<posLibera; i++){
+		for(int k=0; k<posLibera; k++) {
+			if(result.classificaGiudici[i].punteggioTot < listaGiudici[k].punteggioTot){
+				result.classificaGiudici[i].nomeGiudice = malloc(strlen(listaGiudici[k].nomeGiudice) + 1);
+				strcpy(result.classificaGiudici[i].nomeGiudice, listaGiudici[k].nomeGiudice);
+				result.classificaGiudici[i].punteggioTot = listaGiudici[k].punteggioTot;
 				count = k;
 			}
 		}
 		listaGiudici[count].punteggioTot =-1;
 	}
 
-	return &res;
+	return &result;
 }
 
 int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
@@ -137,7 +133,7 @@ int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
 	if (!isSetupTabella) setupTabella();
 
 	result = -1;
-	for (int indexTable = 0; indexTable < N; indexTable++){
+	for (int indexTable = 0; indexTable < NUMROWTABLE; indexTable++){
 
 		if (strcmp(tabella[indexTable].candidato, votazione->nomeCandidato) == 0){
 
