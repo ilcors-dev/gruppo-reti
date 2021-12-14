@@ -33,44 +33,44 @@ void setupTabella(){
 
 	strcpy(tabella[0].candidato, "Giuseppe");
 	strcpy(tabella[0].giudice, "DJFrancesco");
-	tabella[0].categoria = 'U';
+	tabella[0].categoria = 'O';
 	strcpy(tabella[0].nomeFile, "Giuseppe.txt");
 	tabella[0].fase = 'A';
-	tabella[0].voto = 100;
+	tabella[0].voto = 20;
 
 	strcpy(tabella[1].candidato, "Antonio");
 	strcpy(tabella[1].giudice, "DJFrancesco");
 	tabella[1].categoria = 'U';
 	strcpy(tabella[1].nomeFile, "Antonio.txt");
-	tabella[1].fase = 'A';
-	tabella[1].voto = 100;
+	tabella[1].fase = 'B';
+	tabella[1].voto = 70;
 
 	strcpy(tabella[2].candidato, "Fabrizio");
 	strcpy(tabella[2].giudice, "J-AX");
 	tabella[2].categoria = 'U';
 	strcpy(tabella[2].nomeFile, "Fabrizio.txt");
-	tabella[2].fase = 'A';
+	tabella[2].fase = 'S';
 	tabella[2].voto = 100;
 
 	strcpy(tabella[3].candidato, "Filippo");
 	strcpy(tabella[3].giudice, "J-AX");
 	tabella[3].categoria = 'U';
 	strcpy(tabella[3].nomeFile, "Filippo.txt");
-	tabella[3].fase = 'A';
-	tabella[3].voto = 100;
+	tabella[3].fase = 'B';
+	tabella[3].voto = 50;
 
 	strcpy(tabella[4].candidato, "Luisa");
 	strcpy(tabella[4].giudice, "Nina");
-	tabella[4].categoria = 'U';
+	tabella[4].categoria = 'D';
 	strcpy(tabella[0].nomeFile, "Luisa.txt");
 	tabella[4].fase = 'A';
-	tabella[4].voto = 100;
+	tabella[4].voto = 30;
 
 	strcpy(tabella[5].candidato, "Valeria");
 	strcpy(tabella[5].giudice, "Nina");
-	tabella[5].categoria = 'U';
+	tabella[5].categoria = 'D';
 	strcpy(tabella[5].nomeFile, "Valeria.txt");
-	tabella[5].fase = 'A';
+	tabella[5].fase = 'S';
 	tabella[5].voto = 100;
 
 	isSetupTabella = 1;
