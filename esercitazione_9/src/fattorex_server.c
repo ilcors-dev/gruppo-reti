@@ -132,10 +132,11 @@ Classifica * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 }
 
 int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
-	static int result = -1;
+	static int result;
 
 	if (!isSetupTabella) setupTabella();
 
+	result = -1;
 	for (int indexTable = 0; indexTable < N; indexTable++){
 
 		if (strcmp(tabella[indexTable].candidato, votazione->nomeCandidato) == 0){
@@ -167,6 +168,7 @@ int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
 			
 		}
 	}
+	printf("Stato del risultato: %d\n",result);
 	if(result == -1)
 		printf("Nome del concorrente non trovato o azione non effettuabile: invio esito: %d  al client\n", result);
 
