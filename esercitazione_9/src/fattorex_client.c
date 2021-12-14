@@ -4,9 +4,7 @@
 #include <string.h>
 #include "fattorex.h"
 
-#define DIM 256
 #define DIMINPUTSTRING 2
-#define N 3	//numero giudici
 
 int main (int argc, char *argv[])
 {
@@ -26,7 +24,7 @@ int main (int argc, char *argv[])
   	host = (argc == 2) ? argv[1] : "localhost"; //se non specificato viene assegnato "localhost"
 
 	votazione = malloc(sizeof(Voto));
-	votazione->nomeCandidato = (char*)malloc(DIM);
+	votazione->nomeCandidato = (char*)malloc(MAXLENGTHSTRING);
 	printf("Creazione struttura dati Input avvenuta con successo!\n");
 
 	gestoreTrasporto = clnt_create (host, VOTAFATTOREX, VOTAFATTOREXVERS, "udp");
@@ -54,7 +52,7 @@ int main (int argc, char *argv[])
 			printf("Invocazione classifica_giudici avvenuta con successo!\n");
 			printf("Stampa esito:\n");
 
-			for(int i=0; i<N; i++) {
+			for(int i=0; i<NUMGIUDICI; i++) {
 				if(classificaGiudici->classificaGiudici[i].punteggioTot > 0) {
 						printf("%s con %d voti\n", classificaGiudici->classificaGiudici[i].nomeGiudice, classificaGiudici->classificaGiudici[i].punteggioTot);
 				}
