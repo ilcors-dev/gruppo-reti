@@ -9,31 +9,28 @@
 
 int main (int argc, char *argv[])
 {
-	char *host; //nome host
-  	CLIENT *cl; //gestore del trasporto
+	char *host; 
+  	CLIENT *gestoreTrasporto; 
 
-	int i, *ris, numVoti=-1;
-  	char c;
+	int *ris;
   	Classifica *classificaGiudici;
-	void *voidValue;
 
-  	//per leggere stringhe da standard di input
   	char ok[DIM];
 	Voto * votazione;
 
 
-  	if (argc > 3){
+  	if (argc > 3){//verifica parametri invocazione
     		printf ("usage: %s server_host\n", argv[0]);
     		exit (1);
   	}
-  	host = (argc == 2) ? argv[1] : "localhost";
+  	host = (argc == 2) ? argv[1] : "localhost"; //se non specificato viene assegnato "localhost"
 
 	votazione = malloc(sizeof(Voto));
 	votazione->nomeCandidato = (char*)malloc(DIM);
+	printf("Creazione struttura dati input avvenuta con successo!\n");
 
-	//Creazione gestore del trasporto
-	cl = clnt_create (host, VOTAFATTOREX, VOTAFATTOREXVERS, "udp");
-	if (cl == NULL){
+	gestoreTrasporto = clnt_create (host, VOTAFATTOREX, VOTAFATTOREXVERS, "udp");
+	if (gestoreTrasporto == NULL){
 		clnt_pcreateerror (host);
 		exit (1);
 	}
@@ -41,21 +38,22 @@ int main (int argc, char *argv[])
 
 
 	//Interazione con l'utente
-	printf("Inserire:\n1\tClassifica Giudici\n2\tEsprimi voto\n^D\tper terminare: ");
+	printf("Inserire una:\n1\tClassifica Giudici\n2\tEsprimi voto\n^D\tper terminare: ");
 
 	while (scanf("%s",ok)==1){
 		if( strcmp(ok,"1")==0 ){
 			void *v;
 			// Invocazione remota
-			classificaGiudici = classifica_giudici_1(v, cl);
+			classificaGiudici = classifica_giudici_1(v, gestoreTrasporto);
+			
 
 			//Controllo del risultato
 			if(classificaGiudici == NULL){
 				//Errore di RPC
-				clnt_perror(cl, host);
+				clnt_perror(gestoreTrasporto, host);
 				exit(1);
 			}
-
+			printf("Invocazione classifica_giudici avvenuta con successo!\n");
 			printf("Classifica ordinata giudici:\n");
 
 			for(int i=0; i<N; i++) {
@@ -75,12 +73,12 @@ int main (int argc, char *argv[])
 			scanf("%c", &votazione->tipoOp);
 
 			// Invocazione remota
-			ris = esprimi_voto_1(votazione, cl);
+			ris = esprimi_voto_1(votazione, gestoreTrasporto);
 
 			//Controllo del risultato
 			if(ris == NULL){
 				//Errore di RPC
-				clnt_perror(cl, host);
+				clnt_perror(gestoreTrasporto, host);
 				exit(1);
 			}
 
@@ -98,6 +96,6 @@ int main (int argc, char *argv[])
 	} // while
 
 	// Libero le risorse, distruggendo il gestore di trasporto
-	clnt_destroy (cl);
+	clnt_destroy (gestoreTrasporto);
 	exit(0);
 }//main
