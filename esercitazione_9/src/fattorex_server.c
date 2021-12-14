@@ -8,99 +8,72 @@
 #include <stdlib.h>
 #include "fattorex.h"
 
-#define N 9 //3 concorrenti per giudice
+#define N 6 //2 concorrenti per giudice
+#define DIMSTRING 256
 
 /*STATO INTERNO PRIVATO DEL SERVER*/
 typedef struct{
-	char* candidato;
-	char* giudice;
+	char candidato[DIMSTRING];
+	char giudice[DIMSTRING];
 	char categoria ;
-	char* nomeFile;
+	char nomeFile[DIMSTRING];
 	char fase;
 	int voto;
-} Riga;
+} Tupla;
 
 //variabili globali statiche
-static Riga t[N];
-static int inizializzato = 0;
+static Tupla tabella[N];
+static int isSetupTabella = 0;
 
 
 /*Stato interno parzialmente implementato*/
 void setupTabella(){
 	int i;
-	if (inizializzato == 1) return;
+	if (isSetupTabella == 1) return;
 
-	for (i = 0; i < N; i++){
+	strcpy(tabella[0].candidato, "Giuseppe");
+	strcpy(tabella[0].giudice, "DJFrancesco");
+	tabella[0].categoria = 'U';
+	strcpy(tabella[0].nomeFile, "Giuseppe.txt");
+	tabella[0].fase = 'A';
+	tabella[0].voto = 100;
 
-		t[i].candidato = malloc(2);
-		strcpy(t[i].candidato, "L");
+	strcpy(tabella[1].candidato, "Antonio");
+	strcpy(tabella[1].giudice, "DJFrancesco");
+	tabella[1].categoria = 'U';
+	strcpy(tabella[1].nomeFile, "Antonio.txt");
+	tabella[1].fase = 'A';
+	tabella[1].voto = 100;
 
-		t[i].giudice = malloc(2);
-		strcpy(t[i].giudice, "L");
+	strcpy(tabella[2].candidato, "Fabrizio");
+	strcpy(tabella[2].giudice, "J-AX");
+	tabella[2].categoria = 'U';
+	strcpy(tabella[2].nomeFile, "Fabrizio.txt");
+	tabella[2].fase = 'A';
+	tabella[2].voto = 100;
 
-		t[i].categoria = 'L';
+	strcpy(tabella[3].candidato, "Filippo");
+	strcpy(tabella[3].giudice, "J-AX");
+	tabella[3].categoria = 'U';
+	strcpy(tabella[3].nomeFile, "Filippo.txt");
+	tabella[3].fase = 'A';
+	tabella[3].voto = 100;
 
-		t[i].nomeFile = malloc(2);
-		strcpy(t[i].nomeFile, "L");
+	strcpy(tabella[4].candidato, "Luisa");
+	strcpy(tabella[4].giudice, "Nina");
+	tabella[4].categoria = 'U';
+	strcpy(tabella[0].nomeFile, "Luisa.txt");
+	tabella[4].fase = 'A';
+	tabella[4].voto = 100;
 
-		t[i].fase = 'L';
+	strcpy(tabella[5].candidato, "Valeria");
+	strcpy(tabella[5].giudice, "Nina");
+	tabella[5].categoria = 'U';
+	strcpy(tabella[5].nomeFile, "Valeria.txt");
+	tabella[5].fase = 'A';
+	tabella[5].voto = 100;
 
-		t[i].voto = -1;
-	}
-
-	free(t[1].candidato);
-	t[1].candidato = malloc(strlen("Brasco") + 1);
-	strcpy(t[1].candidato, "Brasco");
-	free(t[1].giudice);
-	t[1].giudice = malloc(strlen("Bowie") + 1);
-	strcpy(t[1].giudice, "Bowie");
-	t[1].categoria = 'U';
-	free(t[1].nomeFile);
-	t[1].nomeFile = malloc(strlen("BrascoProfile.txt") + 1);
-	strcpy(t[1].nomeFile, "BrascoProfile.txt");
-	t[1].fase = 'A';
-	t[1].voto = 100;
-
-	free(t[2].candidato);
-	t[2].candidato = malloc(strlen("Viga") + 1);
-	strcpy(t[2].candidato, "Viga");
-	free(t[2].giudice);
-	t[2].giudice = malloc(strlen("Winehouse") + 1);
-	strcpy(t[2].giudice, "Winehouse");
-	t[2].categoria = 'D';
-	free(t[2].nomeFile);
-	t[2].nomeFile = malloc(strlen("alfredo.txt") + 1);
-	strcpy(t[2].nomeFile, "alfredo.txt");
-	t[2].fase = 'S';
-	t[2].voto = 50;
-
-	free(t[3].candidato);
-	t[3].candidato = malloc(strlen("Pippo") + 1);
-	strcpy(t[3].candidato, "Pippo");
-	free(t[3].giudice);
-	t[3].giudice = malloc(strlen("Bowie") + 1);
-	strcpy(t[3].giudice, "Bowie");
-	t[3].categoria = 'D';
-	free(t[3].nomeFile);
-	t[3].nomeFile = malloc(strlen("canzone.txt") + 1);
-	strcpy(t[3].nomeFile, "canzone.txt");
-	t[3].fase = 'S';
-	t[3].voto = 200;
-
-	free(t[4].candidato);
-	t[4].candidato = malloc(strlen("Mike") + 1);
-	strcpy(t[4].candidato, "Mike");
-	free(t[4].giudice);
-	t[4].giudice = malloc(strlen("Steve") + 1);
-	strcpy(t[4].giudice, "Steve");
-	t[4].categoria = 'D';
-	free(t[4].nomeFile);
-	t[4].nomeFile = malloc(strlen("track.txt") + 1);
-	strcpy(t[3].nomeFile, "track.txt");
-	t[4].fase = 'S';
-	t[4].voto = 400;
-
-	inizializzato = 1;
+	isSetupTabella = 1;
 	printf("Terminata inizializzazione struttura dati!\n");
 }
 
@@ -123,17 +96,17 @@ Classifica * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 		presente = 0;
 
 		for(k=0; k<N; k++){
-			if(strcmp(listaGiudici[k].nomeGiudice, t[i].giudice)==0){
-				listaGiudici[k].punteggioTot = listaGiudici[k].punteggioTot + t[i].voto;
+			if(strcmp(listaGiudici[k].nomeGiudice, tabella[i].giudice)==0){
+				listaGiudici[k].punteggioTot = listaGiudici[k].punteggioTot + tabella[i].voto;
 				presente = 1;
 			} 
 		}
 
 		if(presente == 0){
 			free(listaGiudici[ind].nomeGiudice);
-			listaGiudici[ind].nomeGiudice = malloc(strlen(t[i].giudice) + 1);
-			strcpy(listaGiudici[ind].nomeGiudice, t[i].giudice);
-			listaGiudici[ind].punteggioTot = t[i].voto;
+			listaGiudici[ind].nomeGiudice = malloc(strlen(tabella[i].giudice) + 1);
+			strcpy(listaGiudici[ind].nomeGiudice, tabella[i].giudice);
+			listaGiudici[ind].punteggioTot = tabella[i].voto;
 			ind++;
 		}
 	}
@@ -170,18 +143,18 @@ int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
 
 	for (i = 0; i < N; i++){
 
-		printf("VOTO: %s %s %d\n", t[i].candidato, votazione->nomeCandidato, t[i].voto);
+		printf("VOTO: %s %s %d\n", tabella[i].candidato, votazione->nomeCandidato, tabella[i].voto);
 
-		if (strcmp(t[i].candidato, votazione->nomeCandidato) == 0){
+		if (strcmp(tabella[i].candidato, votazione->nomeCandidato) == 0){
 			if (votazione->tipoOp == 'A'){
-				t[i].voto++;
+				tabella[i].voto++;
 			}
 
 			if (votazione->tipoOp == 'S'){
-				t[i].voto--;
+				tabella[i].voto--;
 			}
-			printf("VOTO: %d\n", t[i].voto);
-			votoTot=t[i].voto;
+			printf("VOTO: %d\n", tabella[i].voto);
+			votoTot=tabella[i].voto;
 			found = 0;
 			break;
 		}
