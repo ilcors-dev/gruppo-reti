@@ -9,14 +9,13 @@
 #include "fattorex.h"
 
 #define N 6 //2 concorrenti per giudice
-#define DIMSTRING 256
 
 /*STATO INTERNO PRIVATO DEL SERVER*/
 typedef struct{
-	char candidato[DIMSTRING];
-	char giudice[DIMSTRING];
+	char candidato[MAXLENGTHSTRING];
+	char giudice[MAXLENGTHSTRING];
 	char categoria ;
-	char nomeFile[DIMSTRING];
+	char nomeFile[MAXLENGTHSTRING];
 	char fase;
 	int voto;
 } Tupla;
@@ -28,8 +27,6 @@ static int isSetupTabella = 0;
 
 /*Stato interno parzialmente implementato*/
 void setupTabella(){
-	int i;
-	if (isSetupTabella == 1) return;
 
 	strcpy(tabella[0].candidato, "Giuseppe");
 	strcpy(tabella[0].giudice, "DJFrancesco");
@@ -81,8 +78,8 @@ void setupTabella(){
 Classifica * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 	Giudice listaGiudici[N];
 	static Classifica res;
-	int i, k, presente, ind=0, max, count =0;
-	setupTabella();
+	int i, k, presente, ind=0, count =0;
+	if (!isSetupTabella) setupTabella();
 
 	// inizializzo listaGiudici
 	for(i=0; i<N; i++){
@@ -135,34 +132,43 @@ Classifica * classifica_giudici_1_svc(void * voidValue, struct svc_req *reqstp){
 }
 
 int * esprimi_voto_1_svc(Voto* votazione, struct svc_req *reqstp){
-	static int found;
-	found = -1;
-	int i, votoTot;
+	static int result = -1;
 
-	setupTabella();
+	if (!isSetupTabella) setupTabella();
 
-	for (i = 0; i < N; i++){
+	for (int indexTable = 0; indexTable < N; indexTable++){
 
-		printf("VOTO: %s %s %d\n", tabella[i].candidato, votazione->nomeCandidato, tabella[i].voto);
+		if (strcmp(tabella[indexTable].candidato, votazione->nomeCandidato) == 0){
 
-		if (strcmp(tabella[i].candidato, votazione->nomeCandidato) == 0){
-			if (votazione->tipoOp == 'A'){
-				tabella[i].voto++;
+			switch (votazione->tipoOp)
+			{
+			case 'A':
+					{
+						tabella[indexTable].voto++;
+						printf("[Incrementa Voto] : Aggiornato voto candidato %s a votazione %d\n", tabella[indexTable].candidato, tabella[indexTable].voto);
+						result = 0;
+					}	
+				break;
+
+			case 'S':
+					{
+						if (tabella[indexTable].voto > 0) {
+							tabella[indexTable].voto--;
+							printf("[Decrementa Voto]: Aggiornato voto candidato %s a votazione %d\n", tabella[indexTable].candidato, tabella[indexTable].voto);
+							result = 0;
+						} else printf("[Decrementa Voto]: impossibile decrementare voto candidato %s essendo pari a 0\n", tabella[indexTable].candidato);
+					}	
+				break;
+			
+			default:
+					printf("%c : operazone non gestita dal server",votazione->tipoOp);
+				break;
 			}
-
-			if (votazione->tipoOp == 'S'){
-				tabella[i].voto--;
-			}
-			printf("VOTO: %d\n", tabella[i].voto);
-			votoTot=tabella[i].voto;
-			found = 0;
-			break;
+			
 		}
 	}
-	if(found == 0)
-		printf ("Risultato: \n\t Cantante = %s \n\t Voti = %d\n", votazione->nomeCandidato, votoTot);
-	else 
-		printf("Problemi nell'attribuzione del voto, nome non trovato\n");
+	if(result == -1)
+		printf("Nome del concorrente non trovato o azione non effettuabile: invio esito: %d  al client\n", result);
 
-	return (&found);
+	return (&result);
 }
